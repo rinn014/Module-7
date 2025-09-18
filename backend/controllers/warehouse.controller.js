@@ -1,8 +1,11 @@
 const Warehouse = require("../models/Warehouse");
 const Inventory = require("../models/Inventory");
+const { validateWarehouse, validateWarehouseTransfer } = require("../utils/validation");
 
 // Add new warehouse
 exports.addWarehouse = async (req, res) => {
+  const { error } = validateWarehouse(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
   try {
     const warehouse = new Warehouse(req.body);
     await warehouse.save();
@@ -34,6 +37,8 @@ exports.assignItem = async (req, res) => {
 
 // Transfer item between warehouses
 exports.transferItem = async (req, res) => {
+  const { error } = validateWarehouseTransfer(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
   try {
     const { fromWarehouseId, toWarehouseId, itemId, quantity } = req.body;
 
