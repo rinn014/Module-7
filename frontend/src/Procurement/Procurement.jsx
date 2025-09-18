@@ -39,7 +39,8 @@ const Procurement = () => {
     return (
         <div style={{ padding: '20px' }}>
             <h2>Procurement (Purchasing) Module</h2>
-            
+        
+
             {/* Purchase Requisition and Approval Section */}
             <h3>Purchase Requisitions</h3>
             <form onSubmit={handleAddRequisition}>
