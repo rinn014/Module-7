@@ -1,8 +1,11 @@
 const Transaction = require("../models/Transaction");
 const Inventory = require("../models/Inventory");
+const { validateTransaction } = require("../utils/validation");
 
 // Record stock-in or stock-out
 exports.recordTransaction = async (req, res) => {
+  const { error } = validateTransaction(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
   try {
     const { itemId, type, quantity, remarks, expiryDate } = req.body;
 
