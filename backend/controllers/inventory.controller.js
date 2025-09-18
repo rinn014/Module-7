@@ -18,10 +18,6 @@ exports.addItem = async (req, res) => {
 
 // Update existing item
 exports.updateItem = async (req, res) => {
-  const { error } = validateInventoryItem(req.body);
-  if (error) {
-    return res.status(400).json({ message: error.details[0].message });
-  }
   try {
     const item = await Inventory.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
