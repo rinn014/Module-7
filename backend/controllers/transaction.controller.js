@@ -30,7 +30,8 @@ exports.recordTransaction = async (req, res) => {
       type,
       quantity,
       remarks,
-      expiryDate
+      expiryDate,
+      purchaseOrderId
     });
     await transaction.save();
 
