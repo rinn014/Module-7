@@ -4,10 +4,11 @@ const { validateTransaction } = require("../utils/validation");
 
 // Record stock-in or stock-out
 exports.recordTransaction = async (req, res) => {
-  const { error } = validateTransaction(req.body);
-  if (error) return res.status(400).json({ error: error.details[0].message });
   try {
-    const { itemId, type, quantity, remarks, expiryDate } = req.body;
+    const { error, value } = validateTransaction(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { itemId, type, quantity, remarks, expiryDate, purchaseOrderId } = value;
 
     const item = await Inventory.findById(itemId);
     if (!item) return res.status(404).json({ error: "Item not found" });
@@ -31,11 +32,17 @@ exports.recordTransaction = async (req, res) => {
       quantity,
       remarks,
       expiryDate,
-      purchaseOrderId
+      purchaseOrderId,
     });
     await transaction.save();
 
-    res.status(201).json({ message: "Transaction recorded successfully", transaction, item });
+    res
+      .status(201)
+      .json({
+        message: "Transaction recorded successfully",
+        transaction,
+        item,
+      });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -44,7 +51,10 @@ exports.recordTransaction = async (req, res) => {
 // Get all transactions
 exports.getTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find().populate("itemId", "name sku");
+    const transactions = await Transaction.find()
+    .populate("itemId","name sku")
+    .populate("purchaserderId", "status orderDate");
+
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: error.message });
