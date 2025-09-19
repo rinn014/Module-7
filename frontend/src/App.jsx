@@ -1,24 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Procurement from './Procurement/Procurement'; // Assuming you created the folder and file as instructed
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import Procurement from "./pages/Dashboard/Procurement"
 
-function App() {
+const App = () => {
   return (
+    <div>
     <Router>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/procurement">Procurement Module</Link>
-          </li>
-          {/* You can add more links for other modules here */}
-        </ul>
-      </nav>
       <Routes>
         <Route path="/procurement" element={<Procurement />} />
-        {/* Add routes for other modules here */}
       </Routes>
     </Router>
+    </div>
   );
-}
+};
 
 export default App;
