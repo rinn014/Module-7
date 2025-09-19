@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import Procurement from "./pages/Dashboard/Procurement"
+import Procurement from "./pages/Dashboard/Procurement";
 
 const App = () => {
   return (
