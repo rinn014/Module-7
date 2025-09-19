@@ -1,11 +1,12 @@
 import React from 'react'
+import ProcurementLayout from '../../components/layouts/ProcurementLayout';
 
 const Procurement = () => {
   return (
-    <div className="bg-amber-400">
-      <h1 className='text-white text-3xl font-bold underline'>Procurement</h1>
-    </div>
+    <ProcurementLayout>
+      <div>contents</div>
+    </ProcurementLayout>
   )
 }
 
-export default Procurement
+export default Procurement;
