@@ -1,24 +1,17 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Procurement from "./pages/Dashboard/Procurement";
-import ProcurementLayout from "./components/layouts/ProcurementLayout";
+import Requisition from "./pages/Procurement/Requisition";
 
-const App = () => {
+function App() {
   return (
     <Router>
       <Routes>
-        {/* Exclusive layout for Procurement module */}
-        <Route
-          path="/procurement"
-          element={
-            <ProcurementLayout>
-              <Procurement />
-            </ProcurementLayout>
-          }
-        />
+        <Route path="/procurement" element={<Procurement />} />
+        <Route path="/procurement/requisition" element={<Requisition />} />
       </Routes>
     </Router>
   );
-};
+}
 
 export default App;

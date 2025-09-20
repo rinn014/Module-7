@@ -1,38 +1,15 @@
-import React from "react";
+// src/components/layouts/SideMenu.jsx
 import { Link } from "react-router-dom";
 
-const SideMenu = () => {
-  return (
-    <aside className="w-64 bg-gray-800 text-white h-screen p-5">
-      <h2 className="text-xl font-semibold mb-6">Modules</h2>
-      <ul className="space-y-3">
-        <li>
-          <Link
-            to="/procurement"
-            className="block px-3 py-2 rounded hover:bg-gray-700"
-          >
-            Procurement
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/suppliers"
-            className="block px-3 py-2 rounded hover:bg-gray-700"
-          >
-            Suppliers
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/purchase-orders"
-            className="block px-3 py-2 rounded hover:bg-gray-700"
-          >
-            Purchase Orders
-          </Link>
-        </li>
-      </ul>
-    </aside>
-  );
-};
-
+const SideMenu = () => (
+  <aside className="h-full p-6">
+    <ul className="space-y-4 text-base">
+      <li><Link to="/procurement" className="hover:underline">Procurement</Link></li>
+      <li><Link to="/procurement/requisition" className="hover:underline">Requisition</Link></li>
+      <li><Link to="/procurement/suppliers" className="hover:underline">Suppliers</Link></li>
+      <li><Link to="/procurement/purchase-orders" className="hover:underline">Purchase Orders</Link></li>
+      <li><Link to="/procurement/invoices" className="hover:underline">Invoices</Link></li>
+    </ul>
+  </aside>
+);
 export default SideMenu;
