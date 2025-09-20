@@ -1,89 +1,64 @@
 const Requisition = require("../models/Requisition");
-const PurchaseOrder = require("../models/PurchaseOrder");
+const { validateRequisition } = require("../utils/validation");
 
+// Create a new purchase requisition
 exports.createRequisition = async (req, res) => {
   try {
-    const { requester, items } = req.body;
-    if (!requester || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "requester and items[] are required" });
-    }
+    const { error, value } = validateRequisition(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
 
-    const reqDoc = new Requisition(req.body);
-    await reqDoc.save();
-    res.status(201).json(reqDoc);
+    const requisition = new Requisition(value);
+    await requisition.save();
+
+    res.status(201).json(requisition);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// Get all requisitions
 exports.getRequisitions = async (req, res) => {
   try {
-    const requisitions = await Requisition.find().sort({ createdAt: -1 });
+    const requisitions = await Requisition.find().populate("requestedBy", "name");
     res.json(requisitions);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// Get requisition by ID
 exports.getRequisitionById = async (req, res) => {
   try {
-    const r = await Requisition.findById(req.params.id).populate("items.itemId", "name sku");
-    if (!r) return res.status(404).json({ error: "Requisition not found" });
-    res.json(r);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// approve/reject requisition; body: { status: "approved"|"rejected", approver: "Name" }
-exports.updateRequisitionStatus = async (req, res) => {
-  try {
-    const { status, approver } = req.body;
-    if (!["approved", "rejected"].includes(status)) {
-      return res.status(400).json({ error: "status must be 'approved' or 'rejected'" });
-    }
-
-    const requisition = await Requisition.findById(req.params.id);
+    const requisition = await Requisition.findById(req.params.id).populate("requestedBy", "name");
     if (!requisition) return res.status(404).json({ error: "Requisition not found" });
-
-    requisition.status = status;
-    requisition.approvalHistory = requisition.approvalHistory || [];
-    requisition.approvalHistory.push({ approver: approver || "system", status, date: new Date() });
-    await requisition.save();
-
     res.json(requisition);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// optional: create PO from requisition
-exports.createPOFromRequisition = async (req, res) => {
+// Update requisition (e.g., approval or rejection)
+exports.updateRequisition = async (req, res) => {
   try {
-    const { supplierId } = req.body; // supplier must be provided
-    const requisition = await Requisition.findById(req.params.id);
-    if (!requisition) return res.status(404).json({ error: "Requisition not found" });
-    if (requisition.status !== "approved") {
-      return res.status(400).json({ error: "Requisition must be approved before creating PO" });
-    }
+    const { error, value } = validateRequisition(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
 
-    if (!supplierId) return res.status(400).json({ error: "supplierId is required to create PO" });
+    const updated = await Requisition.findByIdAndUpdate(req.params.id, value, { new: true });
+    if (!updated) return res.status(404).json({ error: "Requisition not found" });
 
-    const poItems = requisition.items.map(i => ({
-      itemId: i.itemId,
-      quantity: i.quantity,
-      price: 0, // price to be set by procurement / supplier negotiation
-    }));
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-    const po = new PurchaseOrder({
-      requisitionId: requisition._id,
-      supplierId,
-      items: poItems,
-      status: "draft"
-    });
+// Delete requisition
+exports.deleteRequisition = async (req, res) => {
+  try {
+    const deleted = await Requisition.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Requisition not found" });
 
-    await po.save();
-    res.status(201).json(po);
+    res.json({ message: "Requisition deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
