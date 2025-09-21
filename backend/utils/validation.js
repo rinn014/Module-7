@@ -41,8 +41,8 @@ const validateWarehouse = (data) => {
 const validateWarehouseTransfer = (data) => {
   const schema = Joi.object({
     itemId: Joi.string().hex().length(24).required(),
-    fromWarehouse: Joi.string().required(),
-    toWarehouse: Joi.string().required(),
+    fromWarehouseId: Joi.string().required(),
+    toWarehouseId: Joi.string().required(),
     quantity: Joi.number().integer().positive().required(),
   });
   return schema.validate(data);
@@ -66,9 +66,16 @@ const validateSupplier = (data) => {
 // Purchase Requisition Validation
 const validateRequisition = (data) => {
   const schema = Joi.object({
-    itemId: Joi.string().hex().length(24).required(),
-    quantity: Joi.number().min(1).required(),
-    requestedBy: Joi.string().required(),
+    requester: Joi.string().required(),
+    items: Joi.array()
+      .items(
+        Joi.object({
+          itemId: Joi.string().hex().length(24).required(), // Inventory _id
+          quantity: Joi.number().min(1).required(),
+        })
+      )
+      .min(1)
+      .required(),
     status: Joi.string()
       .valid("pending", "approved", "rejected")
       .default("pending"),
@@ -76,30 +83,57 @@ const validateRequisition = (data) => {
   return schema.validate(data);
 };
 
+
 // Purchase Order Validation
 const validatePurchaseOrder = (data) => {
   const schema = Joi.object({
     requisitionId: Joi.string().hex().length(24).required(),
     supplierId: Joi.string().hex().length(24).required(),
-    orderDate: Joi.date().default(Date.now),
+    items: Joi.array()
+      .items(
+        Joi.object({
+          itemId: Joi.string().hex().length(24).required(),
+          quantity: Joi.number().integer().positive().required(),
+          price: Joi.number().positive().required(),
+        })
+      )
+      .min(1)
+      .required(),
     status: Joi.string()
-      .valid("sent", "confirmed", "delivered", "cancelled")
-      .default("sent"),
+      .valid("draft", "sent", "confirmed", "delivered", "cancelled")
+      .default("draft"),
+    dateIssued: Joi.date().default(Date.now),
   });
   return schema.validate(data);
 };
+
 
 // Invoice Validation
 const validateInvoice = (data) => {
   const schema = Joi.object({
     purchaseOrderId: Joi.string().hex().length(24).required(),
+    supplierId: Joi.string().hex().length(24).required(),
     invoiceNumber: Joi.string().required(),
-    amount: Joi.number().positive().required(),
-    invoiceDate: Joi.date().default(Date.now),
-    status: Joi.string().valid("pending", "paid", "cancelled").default("pending"),
+    items: Joi.array()
+      .items(
+        Joi.object({
+          itemId: Joi.string().hex().length(24).required(),
+          quantity: Joi.number().integer().min(1).required(),
+          unitPrice: Joi.number().positive().required(),
+        })
+      )
+      .min(1)
+      .required(),
+    status: Joi.string().valid("pending", "approved", "paid").default("pending"),
+    remarks: Joi.string().optional(),
   });
+
   return schema.validate(data);
 };
+
+module.exports = { validateInvoice };
+
+
 
 module.exports = {
   // Module 1

@@ -10,6 +10,6 @@ router.put("/updateSupplier/:id", supplierController.updateSupplier);
 router.delete("/deleteSupplier/:id", supplierController.deleteSupplier);
 
 // purchase history
-router.get("/:id/history", supplierController.getSupplierHistory);
+router.get("/getHistory/:id", supplierController.getSupplierHistory);
 
 module.exports = router;

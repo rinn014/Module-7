@@ -2,7 +2,7 @@ import React from 'react'
 
 const Procurement = () => {
   return (
-      <div>contents</div>
+      <div>Procurement Page</div>
   )
 }
 

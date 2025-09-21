@@ -53,7 +53,7 @@ exports.getTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find()
     .populate("itemId","name sku")
-    .populate("purchaserderId", "status orderDate");
+    .populate("purchaseOrderId", "status orderDate");
 
     res.json(transactions);
   } catch (error) {

@@ -19,7 +19,7 @@ exports.createRequisition = async (req, res) => {
 // Get all requisitions
 exports.getRequisitions = async (req, res) => {
   try {
-    const requisitions = await Requisition.find().populate("requestedBy", "name");
+    const requisitions = await Requisition.find().populate("items.itemId", "name sku");
     res.json(requisitions);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -29,7 +29,7 @@ exports.getRequisitions = async (req, res) => {
 // Get requisition by ID
 exports.getRequisitionById = async (req, res) => {
   try {
-    const requisition = await Requisition.findById(req.params.id).populate("requestedBy", "name");
+    const requisition = await Requisition.findById(req.params.id).populate("items.itemId", "name sku");
     if (!requisition) return res.status(404).json({ error: "Requisition not found" });
     res.json(requisition);
   } catch (err) {
