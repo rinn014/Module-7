@@ -1,7 +1,6 @@
 // src/components/layouts/ProcurementLayout.jsx
 import React from "react";
-import Navbar from "./Navbar";
-import SideMenu from "./SideMenu";
+
 
 const ProcurementLayout = ({ children }) => {
   return (

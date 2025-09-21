@@ -1,58 +1,29 @@
-// src/pages/Dashboard/Procurement.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import ProcurementLayout from "../../components/layouts/ProcurementLayout"; // ✅ import layout
 
 const Procurement = () => {
   return (
-    <ProcurementLayout>
-      <div>
-        <h2 className="text-2xl font-semibold mb-6">Procurement Module</h2>
-        <p className="mb-6 text-gray-600">Choose a function to manage:</p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <Link
-            to="/procurement/requisition"
-            className="border p-6 rounded shadow-sm hover:shadow-md transition block"
-          >
-            <h3 className="font-semibold text-lg mb-2">Purchase Requisition</h3>
-            <p className="text-gray-600 text-sm">
-              Initiates internal requests for materials or services.
-            </p>
-          </Link>
-
-          <Link
-            to="/procurement/suppliers"
-            className="border p-6 rounded shadow-sm hover:shadow-md transition block"
-          >
-            <h3 className="font-semibold text-lg mb-2">Supplier Management</h3>
-            <p className="text-gray-600 text-sm">
-              Maintains supplier info and evaluates performance.
-            </p>
-          </Link>
-
-          <Link
-            to="/procurement/purchase-orders"
-            className="border p-6 rounded shadow-sm hover:shadow-md transition block"
-          >
-            <h3 className="font-semibold text-lg mb-2">Purchase Orders</h3>
-            <p className="text-gray-600 text-sm">
-              Handles creation and monitoring of purchase orders.
-            </p>
-          </Link>
-
-          <Link
-            to="/procurement/invoices"
-            className="border p-6 rounded shadow-sm hover:shadow-md transition block"
-          >
-            <h3 className="font-semibold text-lg mb-2">Invoices</h3>
-            <p className="text-gray-600 text-sm">
-              View and manage invoices with validation.
-            </p>
-          </Link>
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+      <h1 className="text-3xl font-bold mb-6">Procurement Module</h1>
+      <div className="grid grid-cols-2 gap-6">
+        <Link to="/suppliers" className="border p-6 rounded shadow hover:bg-gray-100">
+          <h2 className="font-semibold">Supplier Management</h2>
+          <p>Manage supplier details.</p>
+        </Link>
+        <Link to="/requisition" className="border p-6 rounded shadow hover:bg-gray-100">
+          <h2 className="font-semibold">Purchase Requisition</h2>
+          <p>Request for materials or services.</p>
+        </Link>
+        <Link to="/purchase-orders" className="border p-6 rounded shadow hover:bg-gray-100">
+          <h2 className="font-semibold">Purchase Orders</h2>
+          <p>Create and track purchase orders.</p>
+        </Link>
+        <Link to="/invoices" className="border p-6 rounded shadow hover:bg-gray-100">
+          <h2 className="font-semibold">Invoices</h2>
+          <p>View and manage invoices.</p>
+        </Link>
       </div>
-    </ProcurementLayout>
+    </div>
   );
 };
 

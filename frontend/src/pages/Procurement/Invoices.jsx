@@ -1,12 +1,12 @@
-// src/pages/Procurement/Invoices.jsx
 import React, { useState } from "react";
-import ProcurementLayout from "../../components/layouts/ProcurementLayout";
 
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
   const [formData, setFormData] = useState({
-    invoiceNo: "",
     poNumber: "",
+    deliveryReceipt: "",
+    invoiceNumber: "",
+    notes: "",
     status: "Pending",
   });
 
@@ -17,25 +17,22 @@ const Invoices = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setInvoices([...invoices, formData]);
-    setFormData({ invoiceNo: "", poNumber: "", status: "Pending" });
+    setFormData({
+      poNumber: "",
+      deliveryReceipt: "",
+      invoiceNumber: "",
+      notes: "",
+      status: "Pending",
+    });
   };
 
   return (
-    <ProcurementLayout>
-      <div>
-        <h2 className="text-2xl font-semibold mb-6">Invoices</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
+      <div className="w-full max-w-4xl bg-white p-6 rounded shadow">
+        <h1 className="text-2xl font-bold mb-6">Invoices</h1>
 
-        {/* Invoice Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-          <input
-            type="text"
-            name="invoiceNo"
-            value={formData.invoiceNo}
-            onChange={handleChange}
-            placeholder="Invoice Number"
-            className="border p-2 rounded w-full"
-            required
-          />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
           <input
             type="text"
             name="poNumber"
@@ -45,6 +42,31 @@ const Invoices = () => {
             className="border p-2 rounded w-full"
             required
           />
+          <input
+            type="text"
+            name="deliveryReceipt"
+            value={formData.deliveryReceipt}
+            onChange={handleChange}
+            placeholder="Delivery Receipt Number"
+            className="border p-2 rounded w-full"
+            required
+          />
+          <input
+            type="text"
+            name="invoiceNumber"
+            value={formData.invoiceNumber}
+            onChange={handleChange}
+            placeholder="Invoice Number"
+            className="border p-2 rounded w-full"
+            required
+          />
+          <textarea
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            placeholder="Verification Notes / Remarks"
+            className="border p-2 rounded w-full"
+          ></textarea>
           <select
             name="status"
             value={formData.status}
@@ -53,34 +75,41 @@ const Invoices = () => {
           >
             <option>Pending</option>
             <option>Matched</option>
-            <option>Mismatched</option>
+            <option>Mismatch</option>
           </select>
-          <button type="submit" className="border px-4 py-2 rounded">
-            Add Invoice
-          </button>
+          <div className="flex justify-end">
+            <button type="submit" className="border px-4 py-2 rounded hover:bg-gray-100">
+              Save Invoice
+            </button>
+          </div>
         </form>
 
-        {/* Table */}
+        {/* Invoice List */}
+        <h2 className="text-lg font-semibold mb-3">Invoice List</h2>
         <table className="w-full border-collapse border">
           <thead>
-            <tr>
-              <th className="border p-2">Invoice No.</th>
+            <tr className="bg-gray-100">
               <th className="border p-2">PO Number</th>
+              <th className="border p-2">Delivery Receipt</th>
+              <th className="border p-2">Invoice Number</th>
+              <th className="border p-2">Notes</th>
               <th className="border p-2">Status</th>
             </tr>
           </thead>
           <tbody>
-            {invoices.map((invoice, index) => (
+            {invoices.map((inv, index) => (
               <tr key={index}>
-                <td className="border p-2">{invoice.invoiceNo}</td>
-                <td className="border p-2">{invoice.poNumber}</td>
-                <td className="border p-2">{invoice.status}</td>
+                <td className="border p-2">{inv.poNumber}</td>
+                <td className="border p-2">{inv.deliveryReceipt}</td>
+                <td className="border p-2">{inv.invoiceNumber}</td>
+                <td className="border p-2">{inv.notes}</td>
+                <td className="border p-2">{inv.status}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </ProcurementLayout>
+    </div>
   );
 };
 
