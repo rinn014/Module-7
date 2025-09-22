@@ -3,11 +3,12 @@ const router = express.Router();
 const poController = require("../controllers/purchaseOrder.controller");
 
 // CRUD
-router.post("/addOrder", poController.createPurchaseOrder);
-router.get("/getOrder", poController.getPOs);
-router.get("/getOrder/:id", poController.getPOById);
+router.post("/addPurchaseOrder", poController.createPurchaseOrder);
+router.get("/getPurchaseOrder", poController.getPurchaseOrders);
+router.get("/getPurchaseOrder/:id", poController.getPurchaseOrderById);
 
 // update status (e.g. delivered, cancelled)
-router.put("/:id/status", poController.updatePOStatus);
+router.put("/updatePurchaseOrder/:id/status", poController.updatePurchaseOrderStatus);  
+router.delete("/deletePurchaseOrder/:id", poController.deletePurchaseOrder);
 
 module.exports = router;

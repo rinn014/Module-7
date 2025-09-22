@@ -1,14 +1,19 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+<<<<<<< HEAD
 
 import Procurement from "./pages/Dashboard/Procurement";
 import Suppliers from "./pages/Procurement/Suppliers";
 import Requisition from "./pages/Procurement/Requisition";
 import PurchaseOrders from "./pages/Procurement/PurchaseOrders";
 import Invoices from "./pages/Procurement/Invoices";
+=======
+import Procurement from "./pages/Dashboard/Procurement";
+>>>>>>> module_1
 
-function App() {
+const App = () => {
   return (
+<<<<<<< HEAD
     <Router>
       <Routes>
         {/* Main Procurement menu */}
@@ -21,7 +26,16 @@ function App() {
         <Route path="/invoices" element={<Invoices />} />
       </Routes>
     </Router>
+=======
+    <div>
+      <Router>
+        <Routes>
+          <Route path="/procurement" element={<Procurement />} />
+        </Routes>
+      </Router>
+    </div>
+>>>>>>> module_1
   );
-}
+};
 
 export default App;

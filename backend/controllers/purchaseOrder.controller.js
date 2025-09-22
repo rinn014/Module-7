@@ -1,88 +1,79 @@
+// controllers/purchaseOrder.controller.js
 const PurchaseOrder = require("../models/PurchaseOrder");
-const Inventory = require("../models/Inventory");
-const Transaction = require("../models/Transaction");
+const Requisition = require("../models/Requisition");
+const Supplier = require("../models/Supplier");
+const { validatePurchaseOrder } = require("../utils/validation");
 
+// Create a new Purchase Order
 exports.createPurchaseOrder = async (req, res) => {
   try {
-    const { supplierId, items, requisitionId } = req.body;
-    if (!supplierId || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "supplierId and items[] are required" });
-    }
+    const { error, value } = validatePurchaseOrder(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
 
-    const po = new PurchaseOrder({
-      supplierId,
-      items,
-      requisitionId: requisitionId || null,
-      status: "sent"
-    });
+    // Ensure requisition exists
+    const requisition = await Requisition.findById(value.requisitionId);
+    if (!requisition) return res.status(404).json({ error: "Requisition not found" });
 
+    // Ensure supplier exists
+    const supplier = await Supplier.findById(value.supplierId);
+    if (!supplier) return res.status(404).json({ error: "Supplier not found" });
+
+    const po = new PurchaseOrder(value);
     await po.save();
-    res.status(201).json(po);
+
+    res.status(201).json({ message: "Purchase Order created successfully", po });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.getPOs = async (req, res) => {
+// Get all Purchase Orders
+exports.getPurchaseOrders = async (req, res) => {
   try {
-    const pos = await PurchaseOrder.find().populate("supplierId", "name");
+    const pos = await PurchaseOrder.find()
+      .populate("requisitionId", "title status")
+      .populate("supplierId", "name contactInfo");
     res.json(pos);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.getPOById = async (req, res) => {
+// Get a Purchase Order by ID
+exports.getPurchaseOrderById = async (req, res) => {
   try {
-    const po = await PurchaseOrder.findById(req.params.id).populate("supplierId", "name contactInfo");
-    if (!po) return res.status(404).json({ error: "PO not found" });
+    const po = await PurchaseOrder.findById(req.params.id)
+      .populate("requisitionId", "title status")
+      .populate("supplierId", "name contactInfo");
+    if (!po) return res.status(404).json({ error: "Purchase Order not found" });
     res.json(po);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// update status: if status becomes 'delivered' you may include receivedItems in body to process stock-in
-// body example to process goods receipt: { status: "delivered", receivedItems: [{ itemId, receivedQuantity, warehouseId? }] }
-exports.updatePOStatus = async (req, res) => {
+// Update Purchase Order status
+exports.updatePurchaseOrderStatus = async (req, res) => {
   try {
-    const { status, receivedItems } = req.body;
-    const po = await PurchaseOrder.findById(req.params.id);
-    if (!po) return res.status(404).json({ error: "PO not found" });
+    const { status } = req.body;
+    const po = await PurchaseOrder.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    if (!po) return res.status(404).json({ error: "Purchase Order not found" });
+    res.json({ message: "Purchase Order status updated", po });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-    // set status
-    po.status = status || po.status;
-
-    // If delivered and receivedItems provided, create stock-in transactions and update inventory
-    if (status === "delivered" && Array.isArray(receivedItems) && receivedItems.length > 0) {
-      // For each received item: update Inventory quantity and create Transaction (stock-in)
-      for (const r of receivedItems) {
-        const { itemId, receivedQuantity } = r;
-        if (!itemId || typeof receivedQuantity !== "number") continue;
-
-        const item = await Inventory.findById(itemId);
-        if (!item) {
-          // skip or gather errors — for simplicity skip missing item
-          continue;
-        }
-
-        // update inventory quantity
-        item.quantity = (item.quantity || 0) + receivedQuantity;
-        await item.save();
-
-        // create transaction with purchaseOrderId to serve as Goods Receipt record
-        const trx = new Transaction({
-          itemId,
-          type: "stock-in",
-          quantity: receivedQuantity,
-          purchaseOrderId: po._id,
-        });
-        await trx.save();
-      }
-    }
-
-    await po.save();
-    res.json(po);
+// Delete a Purchase Order
+exports.deletePurchaseOrder = async (req, res) => {
+  try {
+    const deleted = await PurchaseOrder.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Purchase Order not found" });
+    res.json({ message: "Purchase Order deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

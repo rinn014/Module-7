@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -28,3 +29,14 @@ const Procurement = () => {
 };
 
 export default Procurement;
+=======
+import React from 'react'
+
+const Procurement = () => {
+  return (
+      <div>Procurement Page</div>
+  )
+}
+
+export default Procurement;
+>>>>>>> module_1

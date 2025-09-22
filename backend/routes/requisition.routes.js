@@ -6,11 +6,8 @@ const requisitionController = require("../controllers/requisition.controller");
 router.post("/addRequisition", requisitionController.createRequisition);
 router.get("/getRequisition", requisitionController.getRequisitions);
 router.get("/getRequisition/:id", requisitionController.getRequisitionById);
-
 // approve/reject requisition
-router.put("/:id/status", requisitionController.updateRequisitionStatus);
-
-// optional: create PO from requisition
-router.post("/:id/create-po", requisitionController.createPOFromRequisition);
+router.put("/updateRequisition/:id/status", requisitionController.updateRequisition);
+router.delete("/deleteRequisition/:id", requisitionController.deleteRequisition);
 
 module.exports = router;

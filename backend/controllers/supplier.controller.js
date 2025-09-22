@@ -1,13 +1,14 @@
 const Supplier = require("../models/Supplier");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Invoice = require("../models/Invoice");
+const { validateSupplier } = require("../utils/validation");
 
 exports.createSupplier = async (req, res) => {
   try {
-    const { name } = req.body;
-    if (!name) return res.status(400).json({ error: "Supplier name is required" });
+    const { error, value } = validateSupplier(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
 
-    const supplier = new Supplier(req.body);
+    const supplier = new Supplier(value);
     await supplier.save();
     res.status(201).json(supplier);
   } catch (err) {
@@ -36,7 +37,13 @@ exports.getSupplierById = async (req, res) => {
 
 exports.updateSupplier = async (req, res) => {
   try {
-    const updated = await Supplier.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { error, value } = validateSupplier(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const updated = await Supplier.findByIdAndUpdate(req.params.id, value, {
+      new: true,
+    });
+
     if (!updated) return res.status(404).json({ error: "Supplier not found" });
     res.json(updated);
   } catch (err) {
@@ -61,7 +68,9 @@ exports.getSupplierHistory = async (req, res) => {
     const supplier = await Supplier.findById(supplierId);
     if (!supplier) return res.status(404).json({ error: "Supplier not found" });
 
-    const orders = await PurchaseOrder.find({ supplierId }).sort({ createdAt: -1 });
+    const orders = await PurchaseOrder.find({ supplierId }).sort({
+      createdAt: -1,
+    });
     const invoices = await Invoice.find({ supplierId }).sort({ createdAt: -1 });
 
     res.json({ supplier, orders, invoices });

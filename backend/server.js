@@ -34,10 +34,10 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/warehouses", warehouseRoutes);
 
 //Start the server
-app.use("/api/procurement/suppliers", supplierRoutes);
-app.use("/api/procurement/requisitions", requisitionRoutes);
-app.use("/api/procurement/purchase-orders", purchaseOrderRoutes);
-app.use("/api/procurement/invoices", invoiceRoutes);
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/requisitions", requisitionRoutes);
+app.use("/api/purchase-orders", purchaseOrderRoutes);
+app.use("/api/invoices", invoiceRoutes);
 
 
 const PORT = process.env.PORT || 5000;
