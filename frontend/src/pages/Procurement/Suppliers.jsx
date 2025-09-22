@@ -1,229 +1,260 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 
-const Suppliers = () => {
+function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     name: "",
     phone: "",
     email: "",
     address: "",
-    product: "",
-    rating: "",
-    contracts: "",
+    rating: 0,
+    contractTerms: "",
+    productCatalog: []
   });
+  const [newProduct, setNewProduct] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [search, setSearch] = useState("");
 
-  // Fetch suppliers on load
+  // ✅ common input style
+  const inputStyle = {
+    width: "100%",
+    padding: "8px",
+    marginBottom: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontSize: "14px",
+  };
+
+  // Fetch suppliers
   useEffect(() => {
-    fetchSuppliers();
+    fetch("http://localhost:5000/api/suppliers/getSupplier")
+      .then(res => res.json())
+      .then(data => setSuppliers(data))
+      .catch(err => console.error("Error fetching suppliers:", err));
   }, []);
 
-  const fetchSuppliers = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/procurement/suppliers/getSupplier");
-      setSuppliers(res.data);
-    } catch (err) {
-      console.error("Error fetching suppliers:", err);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
+  // Add / Update supplier
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      name: form.name,
+      contactInfo: `${form.phone} | ${form.email} | ${form.address}`,
+      rating: Number(form.rating) || 0,
+      contractTerms: form.contractTerms,
+      productCatalog: form.productCatalog
+    };
+
     try {
       if (editingId) {
-        // UPDATE
-        await axios.put(`http://localhost:5000/api/procurement/suppliers/updateSupplier/${editingId}`, {
-          name: formData.name,
-          contactInfo: {
-            phone: formData.phone,
-            email: formData.email,
-            address: formData.address,
-          },
-          productCatalog: [formData.product],
-          rating: formData.rating,
-          contracts: formData.contracts,
-        });
+        const res = await fetch(
+          `http://localhost:5000/api/suppliers/updateSupplier/${editingId}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+        const updated = await res.json();
+        if (!res.ok) return alert("Error: " + updated.error);
+        setSuppliers(suppliers.map(s => (s._id === editingId ? updated : s)));
         setEditingId(null);
       } else {
-        // CREATE
-        await axios.post("http://localhost:5000/api/procurement/suppliers/addSupplier", {
-          name: formData.name,
-          contactInfo: {
-            phone: formData.phone,
-            email: formData.email,
-            address: formData.address,
-          },
-          productCatalog: [formData.product],
-          rating: formData.rating,
-          contracts: formData.contracts,
+        const res = await fetch("http://localhost:5000/api/suppliers/addSupplier", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
+        const newSupplier = await res.json();
+        if (!res.ok) return alert("Error: " + newSupplier.error);
+        setSuppliers([...suppliers, newSupplier]);
       }
 
-      setFormData({
+      // Reset form
+      setForm({
         name: "",
         phone: "",
         email: "",
         address: "",
-        product: "",
-        rating: "",
-        contracts: "",
+        rating: 0,
+        contractTerms: "",
+        productCatalog: []
       });
-
-      fetchSuppliers();
+      setNewProduct("");
     } catch (err) {
-      console.error("Error saving supplier:", err);
+      console.error("Request failed:", err);
+      alert("Something went wrong. Check server logs.");
     }
   };
 
+  // Edit supplier
   const handleEdit = (supplier) => {
-    setEditingId(supplier._id);
-    setFormData({
+    const [phone = "", email = "", address = ""] =
+      supplier.contactInfo?.split(" | ") || [];
+    setForm({
       name: supplier.name,
-      phone: supplier.contactInfo?.phone || "",
-      email: supplier.contactInfo?.email || "",
-      address: supplier.contactInfo?.address || "",
-      product: supplier.productCatalog?.[0] || "",
-      rating: supplier.rating || "",
-      contracts: supplier.contracts || "",
+      phone,
+      email,
+      address,
+      rating: supplier.rating || 0,
+      contractTerms: supplier.contractTerms || "",
+      productCatalog: supplier.productCatalog || []
+    });
+    setEditingId(supplier._id);
+  };
+
+  // Delete supplier
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this supplier?")) return;
+    await fetch(`http://localhost:5000/api/suppliers/deleteSupplier/${id}`, {
+      method: "DELETE",
+    });
+    setSuppliers(suppliers.filter(s => s._id !== id));
+  };
+
+  // Add product to catalog
+  const handleAddProduct = () => {
+    if (newProduct.trim() !== "") {
+      setForm({
+        ...form,
+        productCatalog: [...form.productCatalog, newProduct.trim()],
+      });
+      setNewProduct("");
+    }
+  };
+
+  // Remove product from catalog
+  const handleRemoveProduct = (product) => {
+    setForm({
+      ...form,
+      productCatalog: form.productCatalog.filter((p) => p !== product),
     });
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/procurement/suppliers/deleteSupplier/${id}`);
-      fetchSuppliers();
-    } catch (err) {
-      console.error("Error deleting supplier:", err);
-    }
-  };
+  // Filter suppliers by search
+  const filteredSuppliers = suppliers.filter((s) => {
+    const query = search.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(query) ||
+      s.productCatalog?.some((p) => p.toLowerCase().includes(query))
+    );
+  });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-      <div className="w-full max-w-6xl bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-6">Supplier Management</h1>
+    <div style={{ padding: "20px" }}>
+      <h2>Supplier Management</h2>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mb-6">
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Supplier Name"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="Phone"
-            className="border p-2 rounded w-full"
-          />
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            className="border p-2 rounded w-full"
-          />
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Address"
-            className="border p-2 rounded w-full"
-          />
-          <input
-            type="text"
-            name="product"
-            value={formData.product}
-            onChange={handleChange}
-            placeholder="Product/Service"
-            className="border p-2 rounded w-full"
-          />
-          <input
-            type="number"
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            placeholder="Rating (1-5)"
-            className="border p-2 rounded w-full"
-            min="1"
-            max="5"
-          />
-          <input
-            type="text"
-            name="contracts"
-            value={formData.contracts}
-            onChange={handleChange}
-            placeholder="Contracts/Terms"
-            className="border p-2 rounded w-full col-span-2"
-          />
-          <div className="col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="border px-4 py-2 rounded hover:bg-gray-100"
-            >
-              {editingId ? "Update Supplier" : "Add Supplier"}
-            </button>
+      {/* FORM */}
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "20px",
+          marginBottom: "20px",
+          maxWidth: "800px",
+          background: "#f9f9f9",
+          padding: "20px",
+          border: "1px solid #ddd",
+          borderRadius: "6px",
+        }}
+      >
+        {/* Left column */}
+        <div>
+          <label>Supplier Name</label>
+          <input style={inputStyle} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+
+          <label>Phone</label>
+          <input style={inputStyle} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+
+          <label>Email</label>
+          <input style={inputStyle} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+
+          <label>Address</label>
+          <input style={inputStyle} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+        </div>
+
+        {/* Right column */}
+        <div>
+          <label>Rating (0-5)</label>
+          <input style={inputStyle} type="number" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} />
+
+          <label>Contract Terms</label>
+          <input style={inputStyle} value={form.contractTerms} onChange={(e) => setForm({ ...form, contractTerms: e.target.value })} />
+
+          <label>Products</label>
+          <div style={{ display: "flex", gap: "5px", marginBottom: "10px" }}>
+            <input style={{ ...inputStyle, marginBottom: 0 }} value={newProduct} onChange={(e) => setNewProduct(e.target.value)} placeholder="Add product" />
+            <button type="button" onClick={handleAddProduct}>+ Add</button>
           </div>
+
+          <ul style={{ paddingLeft: "18px" }}>
+            {form.productCatalog.map((p, i) => (
+              <li key={i}>
+                {p}{" "}
+                <button type="button" onClick={() => handleRemoveProduct(p)}>x</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Submit button */}
+        <div style={{ gridColumn: "1 / -1", textAlign: "right" }}>
+          <button
+            type="submit"
+            style={{
+              backgroundColor: "#007bff",
+              color: "#fff",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold"
+            }}
+          >
+            {editingId ? "Update Supplier" : "Add Supplier"}
+          </button>
+        </div>
         </form>
 
-        {/* Supplier List */}
-        <h2 className="text-lg font-semibold mb-3">Supplier List</h2>
-        <table className="w-full border-collapse border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Phone</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Address</th>
-              <th className="border p-2">Product</th>
-              <th className="border p-2">Rating</th>
-              <th className="border p-2">Contracts</th>
-              <th className="border p-2">Actions</th>
+      {/* SEARCH */}
+      <input
+        style={inputStyle}
+        placeholder="Search by name or product..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* LIST */}
+      <table border="1" cellPadding="8" style={{ marginTop: "15px", width: "100%", borderCollapse: "collapse" }}>
+        <thead style={{ background: "#f0f0f0" }}>
+          <tr>
+            <th>Supplier Name</th>
+            <th>Products</th>
+            <th>Contact Info</th>
+            <th>Rating</th>
+            <th>Contract Terms</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredSuppliers.map((s) => (
+            <tr key={s._id}>
+              <td>{s.name}</td>
+              <td>{s.productCatalog?.length > 0 ? s.productCatalog.join(", ") : "No products"}</td>
+              <td>{s.contactInfo}</td>
+              <td>{s.rating}</td>
+              <td>{s.contractTerms}</td>
+              <td>
+                <button onClick={() => handleEdit(s)}>Edit</button>
+                <button onClick={() => handleDelete(s._id)}>Delete</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {suppliers.map((s) => (
-              <tr key={s._id}>
-                <td className="border p-2">{s.name}</td>
-                <td className="border p-2">{s.contactInfo?.phone}</td>
-                <td className="border p-2">{s.contactInfo?.email}</td>
-                <td className="border p-2">{s.contactInfo?.address}</td>
-                <td className="border p-2">{s.productCatalog?.join(", ")}</td>
-                <td className="border p-2">{s.rating}</td>
-                <td className="border p-2">{s.contracts}</td>
-                <td className="border p-2 flex gap-2">
-                  <button
-                    onClick={() => handleEdit(s)}
-                    className="px-3 py-1 border rounded bg-yellow-100 hover:bg-yellow-200"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(s._id)}
-                    className="px-3 py-1 border rounded bg-red-100 hover:bg-red-200"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
 export default Suppliers;

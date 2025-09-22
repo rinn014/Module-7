@@ -56,9 +56,10 @@ const validateWarehouseTransfer = (data) => {
 const validateSupplier = (data) => {
   const schema = Joi.object({
     name: Joi.string().min(3).required(),
-    contactInfo: Joi.string().allow("", null),
+    contactInfo: Joi.string().required(), // expect combined phone/email/address
     rating: Joi.number().min(0).max(5).default(0),
     contractTerms: Joi.string().allow("", null),
+    productCatalog: Joi.array().items(Joi.string()).optional(), // accept products
   });
   return schema.validate(data);
 };
