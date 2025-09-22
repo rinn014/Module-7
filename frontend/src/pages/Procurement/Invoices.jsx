@@ -1,116 +1,180 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
-const Invoices = () => {
+function Invoices() {
   const [invoices, setInvoices] = useState([]);
-  const [formData, setFormData] = useState({
-    poNumber: "",
-    deliveryReceipt: "",
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
+  const [form, setForm] = useState({
+    purchaseOrderId: "",
+    supplierId: "",
     invoiceNumber: "",
-    notes: "",
-    status: "Pending",
+    items: [],
+    remarks: "",
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // ✅ Fetch purchase orders for dropdown
+  useEffect(() => {
+    fetch("http://localhost:5000/api/purchase-orders/getPurchaseOrder")
+      .then((res) => res.json())
+      .then((data) => setPurchaseOrders(data))
+      .catch((err) => console.error("Error fetching POs:", err));
+  }, []);
+
+  // ✅ Fetch invoices
+  useEffect(() => {
+    fetch("http://localhost:5000/api/invoices/getInvoice")
+      .then((res) => res.json())
+      .then((data) => setInvoices(data))
+      .catch((err) => console.error("Error fetching invoices:", err));
+  }, []);
+
+  // ✅ Handle PO selection → auto-fill supplier & items
+  const handleSelectPO = (poId) => {
+    const po = purchaseOrders.find((p) => p._id === poId);
+    if (po) {
+      setForm({
+        ...form,
+        purchaseOrderId: po._id,
+        supplierId: po.supplierId._id,
+        items: po.items,
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  // ✅ Create invoice
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setInvoices([...invoices, formData]);
-    setFormData({
-      poNumber: "",
-      deliveryReceipt: "",
-      invoiceNumber: "",
-      notes: "",
-      status: "Pending",
-    });
+    try {
+      const payload = {
+        purchaseOrderId: form.purchaseOrderId,
+        supplierId: form.supplierId,
+        invoiceNumber: form.invoiceNumber,
+        items: form.items.map((i) => ({
+          itemId: i.itemId,
+          quantity: i.quantity,
+          unitPrice: i.price,
+        })),
+        remarks: form.remarks,
+      };
+
+      const res = await fetch("http://localhost:5000/api/invoices/addInvoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const newInvoice = await res.json();
+      if (!res.ok) return alert("Error: " + newInvoice.error);
+
+      setInvoices([...invoices, newInvoice.invoice || newInvoice]); // invoice may be wrapped
+      setForm({
+        purchaseOrderId: "",
+        supplierId: "",
+        invoiceNumber: "",
+        items: [],
+        remarks: "",
+      });
+    } catch (err) {
+      console.error("Request failed:", err);
+      alert("Something went wrong. Check server logs.");
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-      <div className="w-full max-w-4xl bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-6">Invoices</h1>
+    <div style={{ padding: "20px" }}>
+      <h2>Invoices</h2>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
-          <input
-            type="text"
-            name="poNumber"
-            value={formData.poNumber}
-            onChange={handleChange}
-            placeholder="PO Number"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="text"
-            name="deliveryReceipt"
-            value={formData.deliveryReceipt}
-            onChange={handleChange}
-            placeholder="Delivery Receipt Number"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="text"
-            name="invoiceNumber"
-            value={formData.invoiceNumber}
-            onChange={handleChange}
-            placeholder="Invoice Number"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <textarea
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            placeholder="Verification Notes / Remarks"
-            className="border p-2 rounded w-full"
-          ></textarea>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="border p-2 rounded w-full"
-          >
-            <option>Pending</option>
-            <option>Matched</option>
-            <option>Mismatch</option>
-          </select>
-          <div className="flex justify-end">
-            <button type="submit" className="border px-4 py-2 rounded hover:bg-gray-100">
-              Save Invoice
-            </button>
+      {/* FORM */}
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          marginBottom: "20px",
+          padding: "15px",
+          border: "1px solid #ddd",
+          borderRadius: "6px",
+          background: "#f9f9f9",
+          maxWidth: "600px",
+        }}
+      >
+        <label>Purchase Order</label>
+        <select
+          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+          value={form.purchaseOrderId}
+          onChange={(e) => handleSelectPO(e.target.value)}
+          required
+        >
+          <option value="">-- Select Purchase Order --</option>
+          {purchaseOrders.map((po) => (
+            <option key={po._id} value={po._id}>
+              {po._id} - {po.supplierId?.name}
+            </option>
+          ))}
+        </select>
+
+        <label>Invoice Number</label>
+        <input
+          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+          value={form.invoiceNumber}
+          onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })}
+          required
+        />
+
+        <label>Remarks</label>
+        <input
+          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+          value={form.remarks}
+          onChange={(e) => setForm({ ...form, remarks: e.target.value })}
+        />
+
+        {/* Show items preview */}
+        {form.items.length > 0 && (
+          <div style={{ marginBottom: "10px" }}>
+            <h4>Items from PO:</h4>
+            <ul>
+              {form.items.map((i, idx) => (
+                <li key={idx}>
+                  Item: {i.itemId} | Qty: {i.quantity} | Price: {i.price}
+                </li>
+              ))}
+            </ul>
           </div>
-        </form>
+        )}
 
-        {/* Invoice List */}
-        <h2 className="text-lg font-semibold mb-3">Invoice List</h2>
-        <table className="w-full border-collapse border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">PO Number</th>
-              <th className="border p-2">Delivery Receipt</th>
-              <th className="border p-2">Invoice Number</th>
-              <th className="border p-2">Notes</th>
-              <th className="border p-2">Status</th>
+        <button type="submit" style={{ padding: "8px 15px" }}>
+          Create Invoice
+        </button>
+      </form>
+
+      {/* LIST */}
+      <table
+        border="1"
+        cellPadding="8"
+        style={{
+          marginTop: "15px",
+          width: "100%",
+          borderCollapse: "collapse",
+        }}
+      >
+        <thead style={{ background: "#f0f0f0" }}>
+          <tr>
+            <th>Invoice #</th>
+            <th>Supplier</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {invoices.map((inv) => (
+            <tr key={inv._id}>
+              <td>{inv.invoiceNumber}</td>
+              <td>{inv.supplierId?.name || "N/A"}</td>
+              <td>{inv.totalAmount}</td>
+              <td>{inv.status}</td>
             </tr>
-          </thead>
-          <tbody>
-            {invoices.map((inv, index) => (
-              <tr key={index}>
-                <td className="border p-2">{inv.poNumber}</td>
-                <td className="border p-2">{inv.deliveryReceipt}</td>
-                <td className="border p-2">{inv.invoiceNumber}</td>
-                <td className="border p-2">{inv.notes}</td>
-                <td className="border p-2">{inv.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
 export default Invoices;

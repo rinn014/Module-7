@@ -1,130 +1,189 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
-const PurchaseOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const [formData, setFormData] = useState({
-    supplier: "",
-    item: "",
-    quantity: "",
-    poDate: "",
-    deliveryDate: "",
-    status: "Sent",
+function PurchaseOrders() {
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
+  const [form, setForm] = useState({
+    requisitionId: "",
+    supplierId: "",
+    items: [{ itemId: "", quantity: 1, price: 0 }],
+    status: "draft",
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Fetch purchase orders
+  useEffect(() => {
+    fetch("http://localhost:5000/api/purchase-orders/getPurchaseOrder")
+      .then((res) => res.json())
+      .then((data) => setPurchaseOrders(data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Handle add
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/purchase-orders/addPurchaseOrder",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
+      const newPO = await res.json();
+      if (!res.ok) return alert("Error: " + newPO.error);
+
+      setPurchaseOrders([...purchaseOrders, newPO]);
+      setForm({
+        requisitionId: "",
+        supplierId: "",
+        items: [{ itemId: "", quantity: 1, price: 0 }],
+        status: "draft",
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setOrders([...orders, formData]);
-    setFormData({
-      supplier: "",
-      item: "",
-      quantity: "",
-      poDate: "",
-      deliveryDate: "",
-      status: "Sent",
-    });
+  // Update status
+  const handleUpdateStatus = async (id, status) => {
+    const res = await fetch(
+      `http://localhost:5000/api/purchase-orders/updatePurchaseOrder/${id}/status`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      }
+    );
+    const updated = await res.json();
+    setPurchaseOrders(
+      purchaseOrders.map((po) => (po._id === id ? updated : po))
+    );
+  };
+
+  // Delete PO
+  const handleDelete = async (id) => {
+    await fetch(
+      `http://localhost:5000/api/purchase-orders/deletePurchaseOrder/${id}`,
+      { method: "DELETE" }
+    );
+    setPurchaseOrders(purchaseOrders.filter((po) => po._id !== id));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-      <div className="w-full max-w-4xl bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-6">Purchase Orders</h1>
+    <div style={{ padding: "20px" }}>
+      <h2>Purchase Order Management</h2>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
-          <input
-            type="text"
-            name="supplier"
-            value={formData.supplier}
-            onChange={handleChange}
-            placeholder="Supplier Name"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="text"
-            name="item"
-            value={formData.item}
-            onChange={handleChange}
-            placeholder="Item"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="number"
-            name="quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            placeholder="Quantity"
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="date"
-            name="poDate"
-            value={formData.poDate}
-            onChange={handleChange}
-            className="border p-2 rounded w-full"
-            required
-          />
-          <input
-            type="date"
-            name="deliveryDate"
-            value={formData.deliveryDate}
-            onChange={handleChange}
-            className="border p-2 rounded w-full"
-            required
-          />
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="border p-2 rounded w-full"
-          >
-            <option>Sent</option>
-            <option>Confirmed</option>
-            <option>Delivered</option>
-            <option>Cancelled</option>
-          </select>
-          <div className="flex justify-end">
-            <button type="submit" className="border px-4 py-2 rounded hover:bg-gray-100">
-              Create PO
-            </button>
-          </div>
-        </form>
+      {/* FORM */}
+      <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+        <input
+          placeholder="Requisition ID"
+          value={form.requisitionId}
+          onChange={(e) => setForm({ ...form, requisitionId: e.target.value })}
+          required
+        />
+        <input
+          placeholder="Supplier ID"
+          value={form.supplierId}
+          onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+          required
+        />
+        <input
+          placeholder="Item ID"
+          value={form.items[0].itemId}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              items: [{ ...form.items[0], itemId: e.target.value }],
+            })
+          }
+          required
+        />
+        <input
+          type="number"
+          placeholder="Quantity"
+          value={form.items[0].quantity}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              items: [{ ...form.items[0], quantity: Number(e.target.value) }],
+            })
+          }
+          required
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          value={form.items[0].price}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              items: [{ ...form.items[0], price: Number(e.target.value) }],
+            })
+          }
+          required
+        />
+        <button type="submit">Add Purchase Order</button>
+      </form>
 
-        {/* PO List */}
-        <h2 className="text-lg font-semibold mb-3">Purchase Order List</h2>
-        <table className="w-full border-collapse border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Supplier</th>
-              <th className="border p-2">Item</th>
-              <th className="border p-2">Quantity</th>
-              <th className="border p-2">PO Date</th>
-              <th className="border p-2">Delivery Date</th>
-              <th className="border p-2">Status</th>
+      {/* LIST */}
+      <table
+        border="1"
+        cellPadding="8"
+        style={{ marginTop: "15px", width: "100%", borderCollapse: "collapse" }}
+      >
+        <thead>
+          <tr>
+            <th>Requisition ID</th>
+            <th>Supplier ID</th>
+            <th>Items</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {purchaseOrders.map((po) => (
+            <tr key={po._id}>
+              <td>{po.requisitionId}</td>
+              <td>{po.supplierId}</td>
+              <td>
+                {po.items
+                  .map(
+                    (i) =>
+                      `${i.itemId} (x${i.quantity} @ ₱${i.price?.toFixed(2)})`
+                  )
+                  .join(", ")}
+              </td>
+              <td>{po.status}</td>
+              <td>
+                {po.status === "draft" && (
+                  <>
+                    <button onClick={() => handleUpdateStatus(po._id, "sent")}>
+                      Send
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus(po._id, "cancelled")}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+                {po.status === "sent" && (
+                  <>
+                    <button
+                      onClick={() => handleUpdateStatus(po._id, "confirmed")}
+                    >
+                      Confirm
+                    </button>
+                  </>
+                )}
+                <button onClick={() => handleDelete(po._id)}>Delete</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {orders.map((order, index) => (
-              <tr key={index}>
-                <td className="border p-2">{order.supplier}</td>
-                <td className="border p-2">{order.item}</td>
-                <td className="border p-2">{order.quantity}</td>
-                <td className="border p-2">{order.poDate}</td>
-                <td className="border p-2">{order.deliveryDate}</td>
-                <td className="border p-2">{order.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
 export default PurchaseOrders;

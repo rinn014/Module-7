@@ -1,27 +1,25 @@
-// src/components/layouts/ProcurementLayout.jsx
+// frontend/src/components/layouts/ProcurementLayout.jsx
 import React from "react";
-
+import { Link } from "react-router-dom";
 
 const ProcurementLayout = ({ children }) => {
   return (
-    <div className="flex h-screen w-screen"> {/* full height + full width */}
-      {/* Sidebar */}
-      <div className="w-64 border-r h-full">
-        <SideMenu />
-      </div>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <header style={{ padding: "16px", borderBottom: "1px solid #ddd", textAlign: "center", fontWeight: "bold", fontSize: "20px" }}>
+        Procurement Module
+      </header>
 
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col h-full">
-        {/* Navbar fixed at the top */}
-        <div className="fixed top-0 left-64 right-0 z-10">
-          <Navbar />
-        </div>
+      {/* Navigation */}
+      <nav style={{ display: "flex", justifyContent: "center", gap: "24px", padding: "12px", borderBottom: "1px solid #ddd", background: "#f9f9f9" }}>
+        <Link to="/procurement/suppliers">Suppliers</Link>
+        <Link to="/procurement/requisitions">Requisitions</Link>
+        <Link to="/procurement/purchase-orders">Purchase Orders</Link>
+        <Link to="/procurement/invoices">Invoices</Link>
+      </nav>
 
-        {/* Content area below navbar */}
-        <main className="flex-1 overflow-auto mt-16 p-6 bg-white">
-          <div className="h-full">{children}</div>
-        </main>
-      </div>
+      {/* Main Content */}
+      <main style={{ flex: 1, padding: "20px" }}>{children}</main>
     </div>
   );
 };
