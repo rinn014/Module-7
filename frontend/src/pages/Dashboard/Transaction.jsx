@@ -46,10 +46,18 @@ const Transaction = () => {
   // Record new transaction
   const recordTransaction = async () => {
     try {
+      const transactionData = {
+        ...currentTransaction,
+        purchaseOrderId:
+          currentTransaction.purchaseOrderId.trim() === ""
+            ? null
+            : currentTransaction.purchaseOrderId,
+      };
+
       const response = await fetch(`${API_TRANSACTIONS}/addTransactionRecord`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(currentTransaction),
+        body: JSON.stringify(transactionData),
       });
 
       const data = await response.json();
@@ -220,9 +228,7 @@ const Transaction = () => {
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="p-2.5 border border-gray-300 text-left">
-                  Item
-                </th>
+                <th className="p-2.5 border border-gray-300 text-left">Item</th>
                 <th className="p-2.5 border border-gray-300 text-left">Type</th>
                 <th className="p-2.5 border border-gray-300 text-left">
                   Quantity
@@ -236,9 +242,7 @@ const Transaction = () => {
                 <th className="p-2.5 border border-gray-300 text-left">
                   Purchase Order
                 </th>
-                <th className="p-2.5 border border-gray-300 text-left">
-                  Date
-                </th>
+                <th className="p-2.5 border border-gray-300 text-left">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -248,9 +252,7 @@ const Transaction = () => {
                     {t.itemId?.name} ({t.itemId?.sku})
                   </td>
                   <td className="p-2.5 border border-gray-300">{t.type}</td>
-                  <td className="p-2.5 border border-gray-300">
-                    {t.quantity}
-                  </td>
+                  <td className="p-2.5 border border-gray-300">{t.quantity}</td>
                   <td className="p-2.5 border border-gray-300">
                     {t.remarks || "N/A"}
                   </td>
