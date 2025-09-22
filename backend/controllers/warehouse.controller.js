@@ -52,6 +52,9 @@ exports.assignItem = async (req, res) => {
     warehouse.items.push({ itemId, quantity, zone });
     await warehouse.save();
 
+    item.quantity += quantity;
+    await item.save();
+
     res.json({ message: "Item assigned to warehouse", warehouse });
   } catch (error) {
     res.status(400).json({ error: error.message });

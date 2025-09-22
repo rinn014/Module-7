@@ -5,14 +5,27 @@ const Warehouse = () => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [itemId, setItemId] = useState("");
-  const [quantity, setQuantity] = useState("");
   const [zone, setZone] = useState("");
   const [fromWarehouse, setFromWarehouse] = useState("");
   const [toWarehouse, setToWarehouse] = useState("");
   const [transferItemId, setTransferItemId] = useState("");
   const [transferQuantity, setTransferQuantity] = useState("");
+  const [inventoryItems, setInventoryItems] = useState([]);
 
+  const API_INVENTORY = "http://localhost:8000/api/inventory";
   const API_WAREHOUSE = "http://localhost:8000/api/warehouses";
+
+  const fetchInventoryItems = async () => {
+    try {
+      const res = await fetch(`${API_INVENTORY}/getItems`);
+      if (!res.ok) throw new Error("Failed to fetch inventory items");
+      const data = await res.json();
+      setInventoryItems(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   // Fetch warehouses
   const fetchWarehouses = async () => {
     try {
@@ -27,6 +40,7 @@ const Warehouse = () => {
 
   useEffect(() => {
     fetchWarehouses();
+    fetchInventoryItems();
   }, []);
 
   // Add warehouse
@@ -75,6 +89,14 @@ const Warehouse = () => {
   // Assign item
   const handleAssignItem = async (e) => {
     e.preventDefault();
+
+    // Find the selected item in inventory
+    const selectedItem = inventoryItems.find((i) => i._id === itemId);
+    if (!selectedItem) {
+      alert("Item not found in inventory");
+      return;
+    }
+
     try {
       const res = await fetch(`${API_WAREHOUSE}/assignItem`, {
         method: "POST",
@@ -82,7 +104,7 @@ const Warehouse = () => {
         body: JSON.stringify({
           warehouseId: fromWarehouse,
           itemId,
-          quantity,
+          quantity: selectedItem.quantity, //
           zone,
         }),
       });
@@ -93,7 +115,6 @@ const Warehouse = () => {
       }
 
       setItemId("");
-      setQuantity("");
       setZone("");
       setFromWarehouse("");
       fetchWarehouses();
@@ -177,7 +198,7 @@ const Warehouse = () => {
           ))}
         </select>
 
-        {/* Instead of typing itemId, fetch all Inventory items */}
+        {/* Only show inventory items that are NOT already assigned */}
         <select
           value={itemId}
           onChange={(e) => setItemId(e.target.value)}
@@ -185,23 +206,20 @@ const Warehouse = () => {
           required
         >
           <option value="">Select Item</option>
-          {warehouses
-            .find((w) => w._id === fromWarehouse)
-            ?.items.map((i) => (
-              <option key={i.itemId._id} value={i.itemId._id}>
-                {i.itemId.name} ({i.itemId.sku})
+          {inventoryItems
+            .filter(
+              (item) =>
+                !warehouses.some((w) =>
+                  w.items.some((wi) => wi.itemId._id === item._id)
+                )
+            )
+            .map((item) => (
+              <option key={item._id} value={item._id}>
+                {item.name} ({item.sku} - Stock: {item.quantity})
               </option>
             ))}
         </select>
 
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          className="border p-2 mr-2"
-          required
-        />
         <input
           type="text"
           placeholder="Zone"

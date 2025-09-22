@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 
 const Inventory = () => {
   const [items, setItems] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
   const [currentItem, setCurrentItem] = useState({
     name: "",
     sku: "",
     description: "",
     category: "",
     quantity: 0,
-    warehouseId: "", // NEW: warehouse reference
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -18,33 +16,24 @@ const Inventory = () => {
   const [allItems, setAllItems] = useState([]);
 
   const API_INVENTORY = "http://localhost:8000/api/inventory";
-  const API_WAREHOUSES = "http://localhost:8000/api/warehouses";
 
   useEffect(() => {
     fetchAllItems();
-    fetchWarehouses();
   }, []);
 
-  // Fetch all items in inventory
+  // Fetch all items
   const fetchAllItems = async () => {
     try {
       const response = await fetch(`${API_INVENTORY}/getItems`);
       const data = await response.json();
-      setItems(data);
-      setAllItems(data);
+      if (response.ok) {
+        setItems(data);
+        setAllItems(data);
+      } else {
+        setMessage(data.error || "Failed to fetch items");
+      }
     } catch (error) {
       setMessage(`Error fetching items: ${error.message}`);
-    }
-  };
-
-  // Fetch warehouses (for dropdown)
-  const fetchWarehouses = async () => {
-    try {
-      const response = await fetch(`${API_WAREHOUSES}/getAllWarehouse`);
-      const data = await response.json();
-      setWarehouses(data);
-    } catch (error) {
-      setMessage(`Error fetching warehouses: ${error.message}`);
     }
   };
 
@@ -59,11 +48,11 @@ const Inventory = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        setMessage(data.message || "Item added successfully");
         resetForm();
         fetchAllItems();
       } else {
-        setMessage(data.message || data.error);
+        setMessage(data.error || "Failed to add item");
       }
     } catch (error) {
       setMessage(`Error adding item: ${error.message}`);
@@ -81,11 +70,11 @@ const Inventory = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        setMessage(data.message || "Item updated successfully");
         resetForm();
         fetchAllItems();
       } else {
-        setMessage(data.error);
+        setMessage(data.error || "Failed to update item");
       }
     } catch (error) {
       setMessage(`Error updating item: ${error.message}`);
@@ -103,10 +92,10 @@ const Inventory = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        setMessage(data.message || "Item deleted successfully");
         fetchAllItems();
       } else {
-        setMessage(data.error);
+        setMessage(data.error || "Failed to delete item");
       }
     } catch (error) {
       setMessage(`Error deleting item: ${error.message}`);
@@ -115,7 +104,10 @@ const Inventory = () => {
 
   // Search item by name
   const searchItemById = async () => {
-    if (!searchId) return;
+    if (!searchId.trim()) {
+      fetchAllItems();
+      return;
+    }
 
     const foundItem = allItems.find((item) =>
       item.name.toLowerCase().includes(searchId.toLowerCase())
@@ -133,9 +125,9 @@ const Inventory = () => {
 
       if (response.ok) {
         setItems([data]);
-        setMessage("Search successfully");
+        setMessage("Search successful");
       } else {
-        setMessage(data.error);
+        setMessage(data.error || "Failed to search item");
         setItems([]);
       }
     } catch (error) {
@@ -151,7 +143,6 @@ const Inventory = () => {
       description: item.description || "",
       category: item.category,
       quantity: item.quantity,
-      warehouseId: item.warehouseId?._id || "", 
     });
     setIsEditing(true);
     setEditingId(item._id);
@@ -165,7 +156,6 @@ const Inventory = () => {
       description: "",
       category: "",
       quantity: 0,
-      warehouseId: "",
     });
     setIsEditing(false);
     setEditingId(null);
@@ -283,25 +273,6 @@ const Inventory = () => {
             />
           </div>
 
-          {/* NEW: Warehouse dropdown */}
-          <div className="mb-4 mt-4">
-            <label>Warehouse: </label>
-            <select
-              value={currentItem.warehouseId}
-              onChange={(e) =>
-                setCurrentItem({ ...currentItem, warehouseId: e.target.value })
-              }
-              className="p-1 w-[300px] border rounded-sm outline-none"
-            >
-              <option value="">Select Warehouse</option>
-              {warehouses.map((wh) => (
-                <option key={wh._id} value={wh._id}>
-                  {wh.name} - {wh.location}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <button
             type="button"
             onClick={isEditing ? updateItem : addItem}
@@ -342,9 +313,6 @@ const Inventory = () => {
                   Quantity
                 </th>
                 <th className="p-2.5 border border-gray-300 text-left">
-                  Warehouse
-                </th>
-                <th className="p-2.5 border border-gray-300 text-left">
                   Actions
                 </th>
               </tr>
@@ -361,9 +329,6 @@ const Inventory = () => {
                     {item.quantity}
                   </td>
                   <td className="p-2.5 border border-gray-300">
-                    {item.warehouseId?.name || "N/A"}
-                  </td>
-                  <td className="p-2.5 border border-gray-300">
                     <button
                       onClick={() => editItem(item)}
                       className="px-2.5 py-1.5 mr-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
@@ -376,11 +341,8 @@ const Inventory = () => {
                     >
                       Delete
                     </button>
-                    {/* NEW: View Transactions */}
                     <button
-                      onClick={() =>
-                        (window.location.href = `/transactions`)
-                      }
+                      onClick={() => (window.location.href = `/transactions`)}
                       className="px-2.5 py-1.5 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                     >
                       View Transactions
