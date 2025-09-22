@@ -15,6 +15,29 @@ exports.addWarehouse = async (req, res) => {
   }
 };
 
+// Get all warehouses
+exports.getWarehouses = async (req, res) => {
+  try {
+    const warehouses = await Warehouse.find()
+      .populate("items.itemId", "name sku category quantity");
+    res.json(warehouses);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get warehouse by ID
+exports.getWarehouseById = async (req, res) => {
+  try {
+    const warehouse = await Warehouse.findById(req.params.id)
+      .populate("items.itemId", "name sku category quantity");
+    if (!warehouse) return res.status(404).json({ error: "Warehouse not found" });
+    res.json(warehouse);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Assign item to warehouse
 exports.assignItem = async (req, res) => {
   try {
@@ -70,5 +93,23 @@ exports.transferItem = async (req, res) => {
     res.json({ message: "Item transferred successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+// Delete warehouse
+exports.deleteWarehouse = async (req, res) => {
+  try {
+    const warehouse = await Warehouse.findById(req.params.id);
+    if (!warehouse) return res.status(404).json({ error: "Warehouse not found" });
+
+    // Prevent deletion if warehouse still has items
+    if (warehouse.items.length > 0) {
+      return res.status(400).json({ error: "Cannot delete warehouse with assigned items" });
+    }
+
+    await Warehouse.findByIdAndDelete(req.params.id);
+    res.json({ message: "Warehouse deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

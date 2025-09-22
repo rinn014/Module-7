@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 
 const Inventory = () => {
   const [items, setItems] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [currentItem, setCurrentItem] = useState({
     name: "",
     sku: "",
     description: "",
     category: "",
     quantity: 0,
+    warehouseId: "", // NEW: warehouse reference
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -15,16 +17,18 @@ const Inventory = () => {
   const [message, setMessage] = useState("");
   const [allItems, setAllItems] = useState([]);
 
-  const API_BASE = "http://localhost:8000/api/inventory";
+  const API_INVENTORY = "http://localhost:8000/api/inventory";
+  const API_WAREHOUSES = "http://localhost:8000/api/warehouses";
 
   useEffect(() => {
     fetchAllItems();
+    fetchWarehouses();
   }, []);
 
-  //Fetch all items in inventory
+  // Fetch all items in inventory
   const fetchAllItems = async () => {
     try {
-      const response = await fetch(`${API_BASE}/getItems`);
+      const response = await fetch(`${API_INVENTORY}/getItems`);
       const data = await response.json();
       setItems(data);
       setAllItems(data);
@@ -33,14 +37,23 @@ const Inventory = () => {
     }
   };
 
-  //Add new item
+  // Fetch warehouses (for dropdown)
+  const fetchWarehouses = async () => {
+    try {
+      const response = await fetch(`${API_WAREHOUSES}/getAllWarehouse`);
+      const data = await response.json();
+      setWarehouses(data);
+    } catch (error) {
+      setMessage(`Error fetching warehouses: ${error.message}`);
+    }
+  };
+
+  // Add new item
   const addItem = async () => {
     try {
-      const response = await fetch(`${API_BASE}/addItem`, {
+      const response = await fetch(`${API_INVENTORY}/addItem`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(currentItem),
       });
       const data = await response.json();
@@ -60,11 +73,9 @@ const Inventory = () => {
   // Update item
   const updateItem = async () => {
     try {
-      const response = await fetch(`${API_BASE}/updateItem/${editingId}`, {
+      const response = await fetch(`${API_INVENTORY}/updateItem/${editingId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(currentItem),
       });
       const data = await response.json();
@@ -86,7 +97,7 @@ const Inventory = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const response = await fetch(`${API_BASE}/deleteItem/${id}`, {
+      const response = await fetch(`${API_INVENTORY}/deleteItem/${id}`, {
         method: "DELETE",
       });
       const data = await response.json();
@@ -102,16 +113,14 @@ const Inventory = () => {
     }
   };
 
-  // Search item by ID
+  // Search item by name
   const searchItemById = async () => {
     if (!searchId) return;
 
-    // Find item by name in allItems array
     const foundItem = allItems.find((item) =>
       item.name.toLowerCase().includes(searchId.toLowerCase())
     );
 
-    // Handle case when no item found
     if (!foundItem) {
       setMessage(`No item found with name "${searchId}"`);
       setItems([]);
@@ -119,13 +128,12 @@ const Inventory = () => {
     }
 
     try {
-      // Use the found item's ID for the API call
-      const response = await fetch(`${API_BASE}/getItem/${foundItem._id}`);
+      const response = await fetch(`${API_INVENTORY}/getItem/${foundItem._id}`);
       const data = await response.json();
 
       if (response.ok) {
         setItems([data]);
-        setMessage("Search successfully"); // Updated message
+        setMessage("Search successfully");
       } else {
         setMessage(data.error);
         setItems([]);
@@ -143,6 +151,7 @@ const Inventory = () => {
       description: item.description || "",
       category: item.category,
       quantity: item.quantity,
+      warehouseId: item.warehouseId?._id || "", 
     });
     setIsEditing(true);
     setEditingId(item._id);
@@ -156,6 +165,7 @@ const Inventory = () => {
       description: "",
       category: "",
       quantity: 0,
+      warehouseId: "",
     });
     setIsEditing(false);
     setEditingId(null);
@@ -273,6 +283,25 @@ const Inventory = () => {
             />
           </div>
 
+          {/* NEW: Warehouse dropdown */}
+          <div className="mb-4 mt-4">
+            <label>Warehouse: </label>
+            <select
+              value={currentItem.warehouseId}
+              onChange={(e) =>
+                setCurrentItem({ ...currentItem, warehouseId: e.target.value })
+              }
+              className="p-1 w-[300px] border rounded-sm outline-none"
+            >
+              <option value="">Select Warehouse</option>
+              {warehouses.map((wh) => (
+                <option key={wh._id} value={wh._id}>
+                  {wh.name} - {wh.location}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             type="button"
             onClick={isEditing ? updateItem : addItem}
@@ -313,7 +342,7 @@ const Inventory = () => {
                   Quantity
                 </th>
                 <th className="p-2.5 border border-gray-300 text-left">
-                  Description
+                  Warehouse
                 </th>
                 <th className="p-2.5 border border-gray-300 text-left">
                   Actions
@@ -332,7 +361,7 @@ const Inventory = () => {
                     {item.quantity}
                   </td>
                   <td className="p-2.5 border border-gray-300">
-                    {item.description || "N/A"}
+                    {item.warehouseId?.name || "N/A"}
                   </td>
                   <td className="p-2.5 border border-gray-300">
                     <button
@@ -343,9 +372,18 @@ const Inventory = () => {
                     </button>
                     <button
                       onClick={() => deleteItem(item._id)}
-                      className="px-2.5 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                      className="px-2.5 py-1.5 mr-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                     >
                       Delete
+                    </button>
+                    {/* NEW: View Transactions */}
+                    <button
+                      onClick={() =>
+                        (window.location.href = `/transactions`)
+                      }
+                      className="px-2.5 py-1.5 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                    >
+                      View Transactions
                     </button>
                   </td>
                 </tr>
