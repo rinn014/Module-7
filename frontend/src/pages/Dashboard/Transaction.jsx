@@ -5,7 +5,7 @@ const API_BASE_URL = 'http://localhost:8000/api';
 const TRANSACTION_API = `${API_BASE_URL}/transactions`;
 const INVENTORY_API = `${API_BASE_URL}/inventory`; // Adjust based on your inventory routes
 
-const TransactionManager = () => {
+const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -343,4 +343,4 @@ const TransactionManager = () => {
   );
 };
 
-export default TransactionManager;
+export default Transaction;
