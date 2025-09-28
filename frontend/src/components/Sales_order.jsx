@@ -66,7 +66,7 @@ Total: $${order.totalAmount}
 Linked to Inventory & Finance`
     );
   };
-
+//interfaces
   return (
     <div className="container">
       <h2>Sales Order Management</h2>
