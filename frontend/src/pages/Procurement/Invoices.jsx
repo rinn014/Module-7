@@ -14,6 +14,7 @@ function Invoices() {
   });
   const [editingId, setEditingId] = useState(null);
 
+<<<<<<< HEAD
   const inputStyle = {
     width: "100%",
     padding: "8px",
@@ -22,10 +23,23 @@ function Invoices() {
     borderRadius: "4px",
     fontSize: "14px",
   };
+=======
+  // ✅ Fetch purchase orders for dropdown
+  useEffect(() => {
+    fetch("http://localhost:8000/api/purchase-orders/getPurchaseOrder")
+      .then((res) => res.json())
+      .then((data) => setPurchaseOrders(data))
+      .catch((err) => console.error("Error fetching POs:", err));
+  }, []);
+>>>>>>> module_1
 
   // Fetch invoices
   useEffect(() => {
+<<<<<<< HEAD
     fetch("http://localhost:5000/api/invoices/getInvoices")
+=======
+    fetch("http://localhost:8000/api/invoices/getInvoice")
+>>>>>>> module_1
       .then((res) => res.json())
       .then((data) => setInvoices(data))
       .catch((err) => console.error("Error fetching invoices:", err));
@@ -125,6 +139,19 @@ function Invoices() {
         setInvoices([...invoices, newInv]);
       }
 
+<<<<<<< HEAD
+=======
+      const res = await fetch("http://localhost:8000/api/invoices/addInvoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const newInvoice = await res.json();
+      if (!res.ok) return alert("Error: " + newInvoice.error);
+
+      setInvoices([...invoices, newInvoice.invoice || newInvoice]); // invoice may be wrapped
+>>>>>>> module_1
       setForm({
         purchaseOrderId: "",
         supplierId: "",

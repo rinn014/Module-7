@@ -27,7 +27,7 @@ function Suppliers() {
 
   // Fetch suppliers
   useEffect(() => {
-    fetch("http://localhost:5000/api/suppliers/getSupplier")
+    fetch("http://localhost:8000/api/suppliers/getSupplier")
       .then(res => res.json())
       .then(data => setSuppliers(data))
       .catch(err => console.error("Error fetching suppliers:", err));
@@ -47,7 +47,7 @@ function Suppliers() {
     try {
       if (editingId) {
         const res = await fetch(
-          `http://localhost:5000/api/suppliers/updateSupplier/${editingId}`,
+          `http://localhost:8000/api/suppliers/updateSupplier/${editingId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -59,7 +59,7 @@ function Suppliers() {
         setSuppliers(suppliers.map(s => (s._id === editingId ? updated : s)));
         setEditingId(null);
       } else {
-        const res = await fetch("http://localhost:5000/api/suppliers/addSupplier", {
+        const res = await fetch("http://localhost:8000/api/suppliers/addSupplier", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -105,7 +105,7 @@ function Suppliers() {
   // Delete supplier
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this supplier?")) return;
-    await fetch(`http://localhost:5000/api/suppliers/deleteSupplier/${id}`, {
+    await fetch(`http://localhost:8000/api/suppliers/deleteSupplier/${id}`, {
       method: "DELETE",
     });
     setSuppliers(suppliers.filter(s => s._id !== id));

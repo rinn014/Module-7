@@ -7,7 +7,8 @@ const InventorySchema = new mongoose.Schema({
   category: String,
   quantity: { type: Number, default: 0 },
   unit: { type: String, default: "pcs" }, // type of unit (pcs)
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
+
 
 module.exports = mongoose.model("Inventory", InventorySchema);

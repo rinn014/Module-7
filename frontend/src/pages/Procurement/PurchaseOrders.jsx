@@ -50,7 +50,7 @@ function PurchaseOrders() {
 
   // ✅ Fetch purchase orders
   useEffect(() => {
-    fetch("http://localhost:5000/api/purchase-orders/getPurchaseOrder")
+    fetch("http://localhost:8000/api/purchase-orders/getPurchaseOrder")
       .then((res) => res.json())
       .then((data) => setPurchaseOrders(data))
       .catch((err) => console.error("Error fetching POs:", err));
@@ -61,7 +61,7 @@ function PurchaseOrders() {
     e.preventDefault();
     try {
       const res = await fetch(
-        "http://localhost:5000/api/purchase-orders/addPurchaseOrder",
+        "http://localhost:8000/api/purchase-orders/addPurchaseOrder",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +91,11 @@ function PurchaseOrders() {
   // ✅ Update status
   const handleUpdateStatus = async (id, status) => {
     const res = await fetch(
+<<<<<<< HEAD
       `http://localhost:5000/api/purchase-orders/updatePurchaseOrder/${id}`,
+=======
+      `http://localhost:8000/api/purchase-orders/updatePurchaseOrder/${id}/status`,
+>>>>>>> module_1
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -108,7 +112,7 @@ function PurchaseOrders() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this Purchase Order?")) return;
     await fetch(
-      `http://localhost:5000/api/purchase-orders/deletePurchaseOrder/${id}`,
+      `http://localhost:8000/api/purchase-orders/deletePurchaseOrder/${id}`,
       { method: "DELETE" }
     );
     setPurchaseOrders(purchaseOrders.filter((po) => po._id !== id));
