@@ -31,7 +31,7 @@ function Requisition() {
 
   // ✅ Fetch suppliers
   useEffect(() => {
-    fetch("http://localhost:5000/api/suppliers/getSupplier")
+    fetch("http://localhost:8000/api/suppliers/getSupplier")
       .then((res) => res.json())
       .then((data) => setSuppliers(data))
       .catch((err) => console.error("Error fetching suppliers:", err));
@@ -40,7 +40,7 @@ function Requisition() {
   // ✅ Fetch products from selected supplier
   useEffect(() => {
     if (form.supplierId) {
-      fetch(`http://localhost:5000/api/suppliers/${form.supplierId}/products`)
+      fetch(`http://localhost:8000/api/suppliers/${form.supplierId}/products`)
         .then((res) => res.json())
         .then((data) => setItems(data))
         .catch((err) => console.error("Error fetching supplier items:", err));
