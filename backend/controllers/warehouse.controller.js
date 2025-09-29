@@ -38,7 +38,7 @@ exports.getWarehouseById = async (req, res) => {
   }
 };
 
-// Assign item to warehouse
+// Assign item to warehouse (no duplicates)
 exports.assignItem = async (req, res) => {
   try {
     const { warehouseId, itemId, quantity, zone } = req.body;
@@ -49,11 +49,17 @@ exports.assignItem = async (req, res) => {
     const item = await Inventory.findById(itemId);
     if (!item) return res.status(404).json({ error: "Item not found" });
 
-    warehouse.items.push({ itemId, quantity, zone });
-    await warehouse.save();
+    // Check if item already exists in this warehouse
+    const existingItem = warehouse.items.find(i => i.itemId.toString() === itemId);
 
-    item.quantity += quantity;
-    await item.save();
+    if (existingItem) {
+      existingItem.quantity = quantity;
+      if (zone) existingItem.zone = zone;
+    } else {
+      warehouse.items.push({ itemId, quantity, zone });
+    }
+
+    await warehouse.save();
 
     res.json({ message: "Item assigned to warehouse", warehouse });
   } catch (error) {
@@ -65,6 +71,7 @@ exports.assignItem = async (req, res) => {
 exports.transferItem = async (req, res) => {
   const { error } = validateWarehouseTransfer(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
+
   try {
     const { fromWarehouseId, toWarehouseId, itemId, quantity } = req.body;
 
@@ -77,17 +84,23 @@ exports.transferItem = async (req, res) => {
 
     // Deduct from source
     const fromItem = fromWarehouse.items.find(i => i.itemId.toString() === itemId);
-    if (!fromItem || fromItem.quantity < quantity) {
+    if (!fromItem || Number(fromItem.quantity) < Number(quantity)) {
       return res.status(400).json({ error: "Not enough stock in source warehouse" });
     }
-    fromItem.quantity -= quantity;
+
+    fromItem.quantity = Number(fromItem.quantity) - Number(quantity);
+
+    // ✅ If source item is now 0, remove it from array
+    if (fromItem.quantity <= 0) {
+      fromWarehouse.items = fromWarehouse.items.filter(i => i.itemId.toString() !== itemId);
+    }
 
     // Add to destination
     const toItem = toWarehouse.items.find(i => i.itemId.toString() === itemId);
     if (toItem) {
-      toItem.quantity += quantity;
+      toItem.quantity = Number(toItem.quantity) + Number(quantity);
     } else {
-      toWarehouse.items.push({ itemId, quantity });
+      toWarehouse.items.push({ itemId, quantity: Number(quantity) });
     }
 
     await fromWarehouse.save();
@@ -99,15 +112,18 @@ exports.transferItem = async (req, res) => {
   }
 };
 
-// Delete warehouse
+
+// Delete warehouse (only block if items with >0 quantity exist)
 exports.deleteWarehouse = async (req, res) => {
   try {
     const warehouse = await Warehouse.findById(req.params.id);
     if (!warehouse) return res.status(404).json({ error: "Warehouse not found" });
 
-    // Prevent deletion if warehouse still has items
-    if (warehouse.items.length > 0) {
-      return res.status(400).json({ error: "Cannot delete warehouse with assigned items" });
+    // Filter active items
+    const activeItems = warehouse.items.filter(i => i.quantity > 0);
+
+    if (activeItems.length > 0) {
+      return res.status(400).json({ error: "Cannot delete warehouse with active stock" });
     }
 
     await Warehouse.findByIdAndDelete(req.params.id);
