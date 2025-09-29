@@ -7,6 +7,10 @@ const connectDB = require("./config/db");
 const inventoryRoutes = require("./routes/inventory.routes");
 const transactionRoutes = require("./routes/transaction.routes");
 const warehouseRoutes = require("./routes/warehouse.routes");
+const supplierRoutes = require("./routes/supplier.routes");
+const requisitionRoutes = require("./routes/requisition.routes");
+const purchaseOrderRoutes = require("./routes/purchaseOrder.routes");
+const invoiceRoutes = require("./routes/invoice.routes");
 
 const app = express();
 
@@ -30,5 +34,11 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/warehouses", warehouseRoutes);
 
 //Start the server
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/requisitions", requisitionRoutes);
+app.use("/api/purchase-orders", purchaseOrderRoutes);
+app.use("/api/invoices", invoiceRoutes);
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
