@@ -91,11 +91,7 @@ function PurchaseOrders() {
   // ✅ Update status
   const handleUpdateStatus = async (id, status) => {
     const res = await fetch(
-<<<<<<< HEAD
-      `http://localhost:5000/api/purchase-orders/updatePurchaseOrder/${id}`,
-=======
       `http://localhost:8000/api/purchase-orders/updatePurchaseOrder/${id}/status`,
->>>>>>> module_1
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -23,17 +23,10 @@ function Requisition() {
 
   // ✅ Fetch requisitions
   useEffect(() => {
-<<<<<<< HEAD
-    fetch("http://localhost:5000/api/requisitions/getRequisition")
-      .then((res) => res.json())
-      .then((data) => setRequisitions(data))
-      .catch((err) => console.error("Error fetching requisitions:", err));
-=======
     fetch("http://localhost:8000/api/requisitions/getRequisition")
       .then(res => res.json())
       .then(data => setRequisitions(data))
       .catch(err => console.error(err));
->>>>>>> module_1
   }, []);
 
   // ✅ Fetch suppliers
@@ -61,39 +54,6 @@ function Requisition() {
     e.preventDefault();
 
     try {
-<<<<<<< HEAD
-      if (editingId) {
-        const res = await fetch(
-          `http://localhost:5000/api/requisitions/updateRequisition/${editingId}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-          }
-        );
-        const updated = await res.json();
-        if (!res.ok) return alert("Error: " + updated.error);
-        setRequisitions(
-          requisitions.map((r) => (r._id === editingId ? updated : r))
-        );
-        setEditingId(null);
-      } else {
-        const res = await fetch(
-          "http://localhost:5000/api/requisitions/addRequisition",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-          }
-        );
-        const newReq = await res.json();
-        if (!res.ok) return alert("Error: " + newReq.error);
-        setRequisitions([...requisitions, newReq]);
-      }
-
-      // Reset form
-      setForm({ requester: "", supplierId: "", items: [{ itemId: "", quantity: 1 }] });
-=======
       const res = await fetch("http://localhost:8000/api/requisitions/addRequisition", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -103,7 +63,6 @@ function Requisition() {
       if (!res.ok) return alert("Error: " + newReq.error);
       setRequisitions([...requisitions, newReq]);
       setForm({ requester: "", items: [{ itemId: "", quantity: 1 }] });
->>>>>>> module_1
     } catch (err) {
       console.error("Request failed:", err);
     }
@@ -121,40 +80,19 @@ function Requisition() {
 
   // Approve / Reject requisition
   const handleUpdateStatus = async (id, status) => {
-<<<<<<< HEAD
-    const res = await fetch(
-      `http://localhost:5000/api/requisitions/updateRequisition/${id}/status`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      }
-    );
-=======
     const res = await fetch(`http://localhost:8000/api/requisitions/updateRequisition/${id}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
->>>>>>> module_1
     const updated = await res.json();
     setRequisitions(requisitions.map((r) => (r._id === id ? updated : r)));
   };
 
   // Delete requisition
   const handleDelete = async (id) => {
-<<<<<<< HEAD
-    if (!window.confirm("Are you sure you want to delete this requisition?"))
-      return;
-    await fetch(
-      `http://localhost:5000/api/requisitions/deleteRequisition/${id}`,
-      { method: "DELETE" }
-    );
-    setRequisitions(requisitions.filter((r) => r._id !== id));
-=======
     await fetch(`http://localhost:8000/api/requisitions/deleteRequisition/${id}`, { method: "DELETE" });
     setRequisitions(requisitions.filter(r => r._id !== id));
->>>>>>> module_1
   };
 
   // Filter requisitions by search
