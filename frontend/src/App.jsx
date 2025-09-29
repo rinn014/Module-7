@@ -11,7 +11,7 @@ import Inventory from "./pages/Dashboard/Inventory";
 import Transaction from "./pages/Dashboard/Transaction";
 import Warehouse from "./pages/Dashboard/Warehouse";
 
-const App = () => {
+function App() {
   return (
     <div>
       <Router>
@@ -29,6 +29,6 @@ const App = () => {
       </Router>
     </div>
   );
-};
+}
 
 export default App;
