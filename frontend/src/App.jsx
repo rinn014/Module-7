@@ -11,6 +11,8 @@ import Inventory from "./pages/Dashboard/Inventory";
 import Transaction from "./pages/Dashboard/Transaction";
 import Warehouse from "./pages/Dashboard/Warehouse";
 
+import Finance from "./pages/Finance/FinanceHead";
+
 function App() {
   return (
     <div>
@@ -25,6 +27,7 @@ function App() {
           <Route path="/procurement/requisition" element={<Requisition />} />
           <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/procurement/invoices" element={<Invoices />} />
+          <Route path="/finance/financehead" element={<Finance />} />
         </Routes>
       </Router>
     </div>
