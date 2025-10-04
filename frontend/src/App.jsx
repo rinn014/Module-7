@@ -12,6 +12,10 @@ import Transaction from "./pages/Dashboard/Transaction";
 import Warehouse from "./pages/Dashboard/Warehouse";
 
 import Finance from "./pages/Finance/FinanceHead";
+import Payroll from "./pages/Finance/EmployeePayroll";
+import Supplier from "./pages/Finance/SupplierReport";
+import Customer from "./pages/Finance/CustomerReport";
+import Report from "./pages/Finance/FinanceReport";
 
 function App() {
   return (
@@ -27,7 +31,12 @@ function App() {
           <Route path="/procurement/requisition" element={<Requisition />} />
           <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/procurement/invoices" element={<Invoices />} />
-          <Route path="/finance/financehead" element={<Finance />} />
+
+          <Route path="/finance/general-finance" element={<Finance />} />
+          <Route path="/finance/employee-payroll" element={<Payroll />} />
+          <Route path="/finance/supplier-report" element={<Supplier />} />
+          <Route path="/finance/customer-report" element={<Customer/>} />
+          <Route path="/finance/finance-report" element={<Report />} />
         </Routes>
       </Router>
     </div>

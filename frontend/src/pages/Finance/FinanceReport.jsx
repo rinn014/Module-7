@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function EmployeePayroll() {
+export default function FinanceReport() {
   return (
     <div>
-      <h1 className='justify-items-center m-5'>Employee Payroll</h1>
+      <h1 className='justify-items-center m-5'>Finance Report</h1>
             <nav className="flex gap-6 mb-5 text-blue-700 justify-center">
               <a href='/finance/general-finance'><p className="cursor-pointer hover:underline ">General Ledger</p></a>
               <a href='/finance/supplier-report'><p className="cursor-pointer hover:underline">Accounts Payable (Supplier)</p></a>
