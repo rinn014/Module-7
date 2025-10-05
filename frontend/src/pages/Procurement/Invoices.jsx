@@ -32,11 +32,11 @@ function Invoices() {
 
   // Fetch suppliers and purchase orders
   useEffect(() => {
-    fetch("http://localhost:5000/api/suppliers/getSupplier")
+    fetch("http://localhost:8000/api/suppliers/getSupplier")
       .then((res) => res.json())
       .then((data) => setSuppliers(data));
 
-    fetch("http://localhost:5000/api/purchase-orders/getPurchaseOrder")
+    fetch("http://localhost:8000/api/purchase-orders/getPurchaseOrder")
       .then((res) => res.json())
       .then((data) => setPurchaseOrders(data));
   }, []);
@@ -44,7 +44,7 @@ function Invoices() {
   // Fetch items from supplier if supplierId is manually changed
   useEffect(() => {
     if (form.supplierId) {
-      fetch(`http://localhost:5000/api/suppliers/${form.supplierId}/products`)
+      fetch(`http://localhost:8000/api/suppliers/${form.supplierId}/products`)
         .then((res) => res.json())
         .then((data) => setItems(data))
         .catch((err) => console.error("Error fetching supplier items:", err));
@@ -73,7 +73,7 @@ function Invoices() {
         // also set items dropdown options
         if (selectedPO.supplierId?._id) {
           fetch(
-            `http://localhost:5000/api/suppliers/${selectedPO.supplierId._id}/products`
+            `http://localhost:8000/api/suppliers/${selectedPO.supplierId._id}/products`
           )
             .then((res) => res.json())
             .then((data) => setItems(data));
@@ -97,7 +97,7 @@ function Invoices() {
     try {
       if (editingId) {
         const res = await fetch(
-          `http://localhost:5000/api/invoices/updateInvoice/${editingId}`,
+          `http://localhost:8000/api/invoices/updateInvoice/${editingId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -112,7 +112,7 @@ function Invoices() {
         setEditingId(null);
       } else {
         const res = await fetch(
-          "http://localhost:5000/api/invoices/addInvoice",
+          "http://localhost:8000/api/invoices/addInvoice",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -161,7 +161,7 @@ function Invoices() {
   // Delete Invoice
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this invoice?")) return;
-    await fetch(`http://localhost:5000/api/invoices/deleteInvoice/${id}`, {
+    await fetch(`http://localhost:8000/api/invoices/deleteInvoice/${id}`, {
       method: "DELETE",
     });
     setInvoices(invoices.filter((inv) => inv._id !== id));
@@ -170,7 +170,7 @@ function Invoices() {
   // Update Invoice Status
   const handleStatusUpdate = async (id, status) => {
     const res = await fetch(
-      `http://localhost:5000/api/invoices/updateInvoiceStatus/${id}`,
+      `http://localhost:8000/api/invoices/updateInvoiceStatus/${id}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
