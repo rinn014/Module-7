@@ -11,7 +11,34 @@ import Inventory from "./pages/Dashboard/Inventory";
 import Transaction from "./pages/Dashboard/Transaction";
 import Warehouse from "./pages/Dashboard/Warehouse";
 
+import Attendance from "./pages/HR/Attendance";
+import Dashboard from "./pages/HR/Dashboard";
+import Departments from "./pages/HR/Departments";
+import Employees from "./pages/HR/Employees";
+import Leaves from "./pages/HR/Leaves";
+import Payroll from "./pages/HR/Payroll";
+import Salary from "./pages/HR/Salary";
+
 function App() {
+  const loadData = () => {
+    const saved = localStorage.getItem("ems_data_v1");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          employees: [],
+          departments: [],
+          leaves: [],
+          payroll: [],
+          salary: [],
+        };
+  };
+
+  const [data, setData] = useState(loadData);
+
+  useEffect(() => {
+    localStorage.setItem("ems_data_v1", JSON.stringify(data));
+  }, [data]);
+  
   return (
     <div>
       <Router>
@@ -25,6 +52,14 @@ function App() {
           <Route path="/procurement/requisition" element={<Requisition />} />
           <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/procurement/invoices" element={<Invoices />} />
+
+          <Route path="/HR/Attendance" element={<Attendance />} />
+          <Route path="/HR/Dashboard" element={<Dashboard />} />
+          <Route path="/HR/Departments" element={<Departments />} />
+          <Route path="/HR/Employees" element={<Employees />} />
+          <Route path="/HR/Leaves" element={<Leaves />} />
+          <Route path="/HR/Payroll" element={<Payroll />} />
+          <Route path="/HR/Salary" element={<Salary />} />
         </Routes>
       </Router>
     </div>
