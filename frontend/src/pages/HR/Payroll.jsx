@@ -4,12 +4,11 @@ export default function Payroll({ data, setData }) {
   const [records, setRecords] = useState([]);
   const [period, setPeriod] = useState({ from: "", to: "" });
   const [editing, setEditing] = useState(null);
-  const [editForm, setEditForm] = useState({ base: 0, ot: 0, adj: 0 });
+  const [editForm, setEditForm] = useState({ base: 0, ot: 0, adj: 0, deductions: {} }); // 📌 may deductions na
 
   const generatePayroll = () => {
     if (!period.from || !period.to) return alert("Select payroll period first");
 
-    // kunin lang yung employees na Active o Inactive
     const newRecords = data.employees
       .filter((emp) => emp.status !== "Terminated" && emp.status !== "Resigned")
       .map((emp) => ({
@@ -82,7 +81,7 @@ export default function Payroll({ data, setData }) {
 
   const startEdit = (rec) => {
     setEditing(rec.id);
-    setEditForm({ base: rec.base, ot: rec.ot, adj: rec.adj });
+    setEditForm({ base: rec.base, ot: rec.ot, adj: rec.adj, deductions: { ...rec.deductions } }); // 📌 kasama deductions
   };
 
   const saveEdit = () => {
@@ -176,9 +175,7 @@ export default function Payroll({ data, setData }) {
             <h3 className="font-semibold mb-2">Edit Payroll</h3>
             <div className="grid grid-cols-3 gap-3 mb-2">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Base Salary
-                </label>
+                <label className="block text-sm font-medium mb-1">Base Salary</label>
                 <input
                   type="number"
                   className="border p-2 rounded w-full"
@@ -189,9 +186,7 @@ export default function Payroll({ data, setData }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Overtime
-                </label>
+                <label className="block text-sm font-medium mb-1">Overtime</label>
                 <input
                   type="number"
                   className="border p-2 rounded w-full"
@@ -202,9 +197,7 @@ export default function Payroll({ data, setData }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Adjustment
-                </label>
+                <label className="block text-sm font-medium mb-1">Adjustment</label>
                 <input
                   type="number"
                   className="border p-2 rounded w-full"
@@ -215,6 +208,32 @@ export default function Payroll({ data, setData }) {
                 />
               </div>
             </div>
+
+            {/* 📌 Editable deductions */}
+            <div className="grid grid-cols-4 gap-3 mb-2">
+              {Object.keys(editForm.deductions).map((key) => (
+                <div key={key}>
+                  <label className="block text-sm font-medium mb-1">
+                    {key.toUpperCase()}
+                  </label>
+                  <input
+                    type="number"
+                    className="border p-2 rounded w-full"
+                    value={editForm.deductions[key]}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        deductions: {
+                          ...editForm.deductions,
+                          [key]: Number(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
             <div className="flex gap-2">
               <button
                 onClick={saveEdit}
