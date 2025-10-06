@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 
 export default function Departments({ data, setData }) {
-  const [dept, setDept] = useState({ name: "", description: "", head: "" });
+  const [dept, setDept] = useState({ name: "", head: "" });
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("date"); // date or name
-  const [selected, setSelected] = useState(null); // for details modal
+  const [sortBy, setSortBy] = useState("date");
+  const [selected, setSelected] = useState(null);
 
   // Add Department
   const addDepartment = () => {
     if (!dept.name) return;
     const newDept = { id: Date.now(), ...dept };
     setData({ ...data, departments: [...data.departments, newDept] });
-    setDept({ name: "", description: "", head: "" });
+    setDept({ name: "", head: "" });
   };
 
   // Delete Department
@@ -28,7 +28,6 @@ export default function Departments({ data, setData }) {
     setEditing(d.id);
     setDept({
       name: d.name,
-      description: d.description || "",
       head: d.head || "",
     });
   };
@@ -41,7 +40,7 @@ export default function Departments({ data, setData }) {
       ),
     });
     setEditing(null);
-    setDept({ name: "", description: "", head: "" });
+    setDept({ name: "", head: "" });
   };
 
   // Filter & Sort
@@ -51,14 +50,21 @@ export default function Departments({ data, setData }) {
     )
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
-      return b.id - a.id; // newest first
+      return b.id - a.id;
     });
 
-  // Count employees per department
-  const getEmployeeCount = (deptId) => {
+  // Count employees per department (by name)
+  const getEmployeeCount = (deptName) => {
     return data.employees
-      ? data.employees.filter((emp) => emp.departmentId === deptId).length
+      ? data.employees.filter((emp) => emp.department === deptName).length
       : 0;
+  };
+
+  // Get employees for a department
+  const getEmployeesForDept = (deptName) => {
+    return data.employees
+      ? data.employees.filter((emp) => emp.department === deptName)
+      : [];
   };
 
   return (
@@ -84,18 +90,12 @@ export default function Departments({ data, setData }) {
       </div>
 
       {/* Add / Edit Form */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-2 mb-4">
         <input
           className="border p-2 rounded"
           value={dept.name}
           onChange={(e) => setDept({ ...dept, name: e.target.value })}
           placeholder="Department Name"
-        />
-        <input
-          className="border p-2 rounded"
-          value={dept.description}
-          onChange={(e) => setDept({ ...dept, description: e.target.value })}
-          placeholder="Description"
         />
         <input
           className="border p-2 rounded"
@@ -122,64 +122,121 @@ export default function Departments({ data, setData }) {
         )}
       </div>
 
-      {/* Department List */}
-      <ul className="space-y-2">
-        {filtered.map((d) => (
-          <li
-            key={d.id}
-            className="p-4 border rounded flex justify-between items-center bg-gray-50"
-          >
-            <div>
-              <p className="font-bold text-lg">{d.name}</p>
-              <p className="text-sm text-gray-600">
-                {d.head ? `Head: ${d.head}` : "No Head Assigned"}
-              </p>
-              <p className="text-xs text-gray-500">
-                {getEmployeeCount(d.id)} employees
-              </p>
-            </div>
-            <div className="space-x-2">
-              <button
-                onClick={() => setSelected(d)}
-                className="text-purple-600 hover:underline"
-              >
-                View
-              </button>
-              <button
-                onClick={() => startEdit(d)}
-                className="text-blue-600 hover:underline"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => deleteDepartment(d.id)}
-                className="text-red-600 hover:underline"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {filtered.length === 0 && (
-        <p className="text-gray-500 text-center mt-4">No departments found.</p>
-      )}
+      {/* Department Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full border border-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border px-3 py-2 text-left">Department Name</th>
+              <th className="border px-3 py-2 text-left">Head</th>
+              <th className="border px-3 py-2 text-left">Employees</th>
+              <th className="border px-3 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length > 0 ? (
+              filtered.map((d) => (
+                <tr key={d.id} className="hover:bg-gray-50">
+                  <td className="border px-3 py-2 font-bold">{d.name}</td>
+                  <td className="border px-3 py-2">{d.head || "N/A"}</td>
+                  <td className="border px-3 py-2">
+                    {getEmployeeCount(d.name)} employees
+                  </td>
+                  <td className="border px-3 py-2 space-x-2">
+                    <button
+                      onClick={() => setSelected(d)}
+                      className="text-purple-600 hover:underline"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => startEdit(d)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteDepartment(d.id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="text-center py-4 text-gray-500 italic"
+                >
+                  No departments found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Modal for Department Details */}
       {selected && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
             <h3 className="text-xl font-bold mb-2">{selected.name}</h3>
-            <p className="text-gray-700 mb-2">
-              {selected.description || "No description available"}
-            </p>
             <p className="text-gray-700 mb-2">
               Head: {selected.head || "Not assigned"}
             </p>
-            <p className="text-gray-500 text-sm">
-              Employees: {getEmployeeCount(selected.id)}
+            <p className="text-gray-500 text-sm mb-4">
+              Total Employees: {getEmployeeCount(selected.name)}
             </p>
+
+            {/* Employees list */}
+            <div className="overflow-x-auto">
+              <table className="w-full border border-gray-200 text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border px-3 py-2 text-left">Name</th>
+                    <th className="border px-3 py-2 text-left">Designation</th>
+                    <th className="border px-3 py-2 text-left">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getEmployeesForDept(selected.name).length > 0 ? (
+                    getEmployeesForDept(selected.name).map((emp) => (
+                      <tr key={emp.id} className="hover:bg-gray-50">
+                        <td className="border px-3 py-2">{emp.name}</td>
+                        <td className="border px-3 py-2">{emp.designation}</td>
+                        <td className="border px-3 py-2">
+                          <span
+                            className={`px-2 py-1 rounded text-xs ${
+                              emp.status === "Active"
+                                ? "bg-green-100 text-green-600"
+                                : emp.status === "Inactive"
+                                ? "bg-gray-100 text-gray-600"
+                                : emp.status === "Resigned"
+                                ? "bg-yellow-100 text-yellow-600"
+                                : "bg-red-100 text-red-600"
+                            }`}
+                          >
+                            {emp.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center py-3 text-gray-500 italic"
+                      >
+                        No employees in this department.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
             <button
               onClick={() => setSelected(null)}
               className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
