@@ -66,13 +66,13 @@ function App() {
           <Route path="/finance/customer-report" element={<Customer/>} />
           <Route path="/finance/finance-report" element={<Report />} />
           
-          <Route path="/hr/attendance" element={<Attendance data={data} />} />
-          <Route path="/hr/dashboard" element={<Dashboard data={data} />} />
-          <Route path="/hr/departments" element={<Departments />} />
-          <Route path="/hr/employees" element={<Employees />} />
-          <Route path="/hr/leaves" element={<Leaves />} />
-          <Route path="/hr/payroll-employee" element={<PayrollEmployee />} />
-          <Route path="/hr/salary" element={<Salary />} />
+          <Route path="/hr/attendance" element={<Attendance data={data} setData={setData} />} />
+          <Route path="/hr/dashboard" element={<Dashboard data={data} setData={setData} />} />
+          <Route path="/hr/departments" element={<Departments data={data} setData={setData}/>} />
+          <Route path="/hr/employees" element={<Employees data={data} setData={setData} />} />
+          <Route path="/hr/leaves" element={<Leaves data={data} setData={setData}/>} />
+          <Route path="/hr/payroll-employee" element={<PayrollEmployee data={data} setData={setData}/>} />
+          <Route path="/hr/salary" element={<Salary data={data} setData={setData}/>} />
         </Routes>
       </Router>
     </div>
