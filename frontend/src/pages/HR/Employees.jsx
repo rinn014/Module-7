@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-export default function Employees({ data, setData }) {
+export default function Employees({ data = {}, setData }) {
+  const employees = data.employees || [];
+
   const [emp, setEmp] = useState({
     name: "",
     designation: "",
@@ -119,8 +121,8 @@ export default function Employees({ data, setData }) {
             </tr>
           </thead>
           <tbody>
-            {data.employees.length > 0 ? (
-              data.employees.map((e) => (
+            {employees.length > 0 ? (
+              employees.map((e) => (
                 <tr key={e.id} className="hover:bg-gray-50">
                   <td className="border px-3 py-2">{e.name}</td>
                   <td className="border px-3 py-2">{e.designation}</td>

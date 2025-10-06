@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-export default function Departments({ data, setData }) {
+export default function Departments({ data = {}, setData }) {
+  const departments = data.departments || [];
+  const employees = data.employees || [];
   const [dept, setDept] = useState({ name: "", head: "" });
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
@@ -44,7 +46,7 @@ export default function Departments({ data, setData }) {
   };
 
   // Filter & Sort
-  const filtered = data.departments
+  const filtered = departments
     .filter((d) =>
       d.name.toLowerCase().includes(search.toLowerCase())
     )
@@ -53,18 +55,12 @@ export default function Departments({ data, setData }) {
       return b.id - a.id;
     });
 
-  // Count employees per department (by name)
   const getEmployeeCount = (deptName) => {
-    return data.employees
-      ? data.employees.filter((emp) => emp.department === deptName).length
-      : 0;
+    return employees.filter((emp) => emp.department === deptName).length;
   };
 
-  // Get employees for a department
   const getEmployeesForDept = (deptName) => {
-    return data.employees
-      ? data.employees.filter((emp) => emp.department === deptName)
-      : [];
+    return employees.filter((emp) => emp.department === deptName);
   };
 
   return (

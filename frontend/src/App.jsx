@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Procurement from "./pages/Dashboard/Procurement";
@@ -22,7 +23,7 @@ import Dashboard from "./pages/HR/Dashboard";
 import Departments from "./pages/HR/Departments";
 import Employees from "./pages/HR/Employees";
 import Leaves from "./pages/HR/Leaves";
-import Payroll from "./pages/HR/Payroll";
+import PayrollEmployee from "./pages/HR/Payroll";
 import Salary from "./pages/HR/Salary";
 
 function App() {
@@ -38,13 +39,13 @@ function App() {
           salary: [],
         };
   };
-
   const [data, setData] = useState(loadData);
 
   useEffect(() => {
     localStorage.setItem("ems_data_v1", JSON.stringify(data));
   }, [data]);
   
+
   return (
     <div>
       <Router>
@@ -65,13 +66,13 @@ function App() {
           <Route path="/finance/customer-report" element={<Customer/>} />
           <Route path="/finance/finance-report" element={<Report />} />
           
-          <Route path="/HR/Attendance" element={<Attendance />} />
-          <Route path="/HR/Dashboard" element={<Dashboard />} />
-          <Route path="/HR/Departments" element={<Departments />} />
-          <Route path="/HR/Employees" element={<Employees />} />
-          <Route path="/HR/Leaves" element={<Leaves />} />
-          <Route path="/HR/Payroll" element={<Payroll />} />
-          <Route path="/HR/Salary" element={<Salary />} />
+          <Route path="/hr/attendance" element={<Attendance data={data} />} />
+          <Route path="/hr/dashboard" element={<Dashboard data={data} />} />
+          <Route path="/hr/departments" element={<Departments />} />
+          <Route path="/hr/employees" element={<Employees />} />
+          <Route path="/hr/leaves" element={<Leaves />} />
+          <Route path="/hr/payroll-employee" element={<PayrollEmployee />} />
+          <Route path="/hr/salary" element={<Salary />} />
         </Routes>
       </Router>
     </div>

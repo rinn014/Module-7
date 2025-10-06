@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-export default function Dashboard({ data, setData }) {
+export default function Dashboard({ data }) {
+  const leaves = data?.leaves || [];
   const [activeTab, setActiveTab] = useState("overview"); // overview | applicants
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicant, setApplicant] = useState({
@@ -11,7 +12,7 @@ export default function Dashboard({ data, setData }) {
     resume: "",
   });
 
-  const pendingLeaves = data.leaves.filter((l) => l.status === "Pending");
+  const pendingLeaves = leaves.filter((l) => l.status === "Pending");
 
   // Add new applicant
   const addApplicant = () => {

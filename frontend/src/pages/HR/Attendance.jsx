@@ -3,6 +3,8 @@ import React, { useState } from "react";
 export default function Attendance({ data, setData }) {
   const [employee, setEmployee] = useState("");
 
+  const attendance = data?.attendance || [];
+
   // record time-in
   const timeIn = () => {
     if (!employee) {
@@ -33,7 +35,7 @@ export default function Attendance({ data, setData }) {
 
   // generate simple report
   const generateReport = () => {
-    return data.attendance.map((rec) => {
+    return (data?.attendance || []).map((rec) => {
       let workedHours = 0;
       if (rec.timeIn && rec.timeOut) {
         const start = new Date(rec.timeIn);
@@ -43,7 +45,7 @@ export default function Attendance({ data, setData }) {
       return {
         ...rec,
         workedHours: workedHours.toFixed(2),
-        pay: (workedHours * (data.settings?.hourlyRate || 100)).toFixed(2), // integrate payroll
+        pay: (workedHours * (data.settings?.hourlyRate || 100)).toFixed(2),
       };
     });
   };
@@ -85,8 +87,8 @@ export default function Attendance({ data, setData }) {
               </tr>
             </thead>
             <tbody>
-              {data.attendance.length > 0 ? (
-                data.attendance.map((rec) => (
+              {attendance.length > 0 ? (
+                attendance.map((rec) => (
                   <tr key={rec.id} className="hover:bg-gray-50">
                     <td className="border px-3 py-2">{rec.employee}</td>
                     <td className="border px-3 py-2">{rec.timeIn}</td>
