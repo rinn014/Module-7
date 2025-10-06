@@ -17,6 +17,8 @@ import Payroll from "./pages/Finance/EmployeePayroll";
 import Supplier from "./pages/Finance/SupplierReport";
 import Customer from "./pages/Finance/CustomerReport";
 import Report from "./pages/Finance/FinanceReport";
+import InventoryReport from "./pages/Finance/InventoryReport";
+
 
 import Attendance from "./pages/HR/Attendance";
 import Dashboard from "./pages/HR/Dashboard";
@@ -65,6 +67,7 @@ function App() {
           <Route path="/finance/supplier-report" element={<Supplier />} />
           <Route path="/finance/customer-report" element={<Customer/>} />
           <Route path="/finance/finance-report" element={<Report />} />
+          <Route path="/finance/inventory-report" element={<InventoryReport />} />
           
           <Route path="/hr/attendance" element={<Attendance data={data} setData={setData} />} />
           <Route path="/hr/dashboard" element={<Dashboard data={data} setData={setData} />} />

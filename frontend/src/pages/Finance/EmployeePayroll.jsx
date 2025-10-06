@@ -10,6 +10,7 @@ export default function EmployeePayroll() {
               <a href='/finance/customer-report'><p className="cursor-pointer hover:underline">Accounts Receivable (Customer)</p></a>
               <a href='/finance/finance-report'><p className="cursor-pointer hover:underline">Reports and Compliance</p></a>
               <a href='/finance/employee-payroll'><p className="cursor-pointer hover:underline">Employee Payroll (HR)</p></a>
+              <a href='/finance/inventory-report'><p className="cursor-pointer hover:underline">Inventory Report</p></a>
             </nav>
             <table className="table-auto w-full border border-gray-400 border-collapse [&_*]:border [&_*]:border-gray-400 [&_*]:px-4 [&_*]:py-2">
                <thead className="bg-gray-100"> {/*Ilalagay Sa for loop based on how many iterations  ang napupurchase through procurement*/}

@@ -1,43 +1,35 @@
 import React, { useEffect, useState } from 'react';
 
 export default function SupplierReport() {
-  const [invoices, setInvoices] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:8000/api/finance/invoices')
-      .then(res => res.json())
-      .then(data => setInvoices(data))
-      .catch(err => console.error(err));
-  }, []);
-
   return (
     <div>
-      <h1 className='justify-items-center m-5'>Supplier Report</h1>
-      <nav className="flex gap-6 mb-5 text-blue-700 justify-center">
-        {/* ...existing nav... */}
-      </nav>
-      <table className="table-auto w-full border border-gray-400 border-collapse [&_*]:border [&_*]:border-gray-400 [&_*]:px-4 [&_*]:py-2">
-        <thead className="bg-gray-100">
-          <tr>
-            <th>Invoice #</th>
-            <th>Supplier</th>
-            <th>Total Amount</th>
-            <th>Date Issued</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {invoices.map(inv => (
-            <tr key={inv._id}>
-              <td>{inv.invoiceNumber}</td>
-              <td>{inv.supplierId}</td>
-              <td>{inv.totalAmount}</td>
-              <td>{new Date(inv.dateIssued).toLocaleDateString()}</td>
-              <td>{inv.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h1 className='justify-items-center m-5'>Finance Report</h1>
+            <nav className="flex gap-6 mb-5 text-blue-700 justify-center">
+              <a href='/finance/general-finance'><p className="cursor-pointer hover:underline ">General Ledger</p></a>
+              <a href='/finance/supplier-report'><p className="cursor-pointer hover:underline">Accounts Payable (Supplier)</p></a>
+              <a href='/finance/customer-report'><p className="cursor-pointer hover:underline">Accounts Receivable (Customer)</p></a>
+              <a href='/finance/finance-report'><p className="cursor-pointer hover:underline">Reports and Compliance</p></a>
+              <a href='/finance/employee-payroll'><p className="cursor-pointer hover:underline">Employee Payroll (HR)</p></a>
+              <a href='/finance/inventory-report'><p className="cursor-pointer hover:underline">Inventory Report</p></a>
+            </nav>
+            <table className="table-auto w-full border border-gray-400 border-collapse [&_*]:border [&_*]:border-gray-400 [&_*]:px-4 [&_*]:py-2">
+               <thead className="bg-gray-100"> {/*Ilalagay Sa for loop based on how many iterations  ang napupurchase through procurement*/}
+                <tr> 
+                  <th>Test</th>
+                  <th>Test</th>
+                  <th>Test</th>
+                  <th>Test</th>
+                  <th>Test</th>
+                </tr>
+              </thead>
+              <tr>
+                <td>Test</td>
+                <td>Test</td>
+                <td>Test</td>
+                <td>Test</td>
+                <td>Test</td>
+              </tr>
+            </table>
     </div>
-  );
+  )
 }
