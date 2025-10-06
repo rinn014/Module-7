@@ -1,0 +1,38 @@
+.container, .crm-container, .aftersales-container, .report-container {
+  background: #2c2c2c;
+  color: white;
+  padding: 20px;
+  margin: 20px auto;
+  width: 80%;
+  border-radius: 10px;
+}
+
+.form-card, .order-card, .crm-card, .case-card {
+  background: #ee7829;
+  color: black;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #fff;
+  color: black;
+}
+
+select, input {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 6px;
+}
