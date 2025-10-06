@@ -32,23 +32,9 @@ exports.getInvoices = async (req, res) => {
 
 exports.handleInventoryTransaction = async (req, res) => {
   try {
-    const { productId, quantity, transactionType, unitPrice, date, remarks, purchaseOrderId } = req.body;
-    // Save or process transaction for asset value update
-    // Example: Add to FinanceInventoryTransaction model
-    const record = new FinanceInventoryTransaction({
-      productId,
-      quantity,
-      transactionType,
-      unitPrice,
-      date,
-      remarks,
-      purchaseOrderId
-    });
+    const record = new FinanceInventoryTransaction(req.body);
     await record.save();
-
-    // Optionally, update asset value logic here
-
-    res.status(201).json({ message: 'Inventory transaction recorded in Finance.' });
+    res.status(201).json(record);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
