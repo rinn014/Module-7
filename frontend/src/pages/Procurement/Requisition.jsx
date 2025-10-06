@@ -99,9 +99,9 @@ function Requisition() {
   const filteredRequisitions = requisitions.filter((r) => {
     const query = search.toLowerCase();
     return (
-      r.requester.toLowerCase().includes(query) ||
+      (r.requester || "").toLowerCase().includes(query) ||
       r.items.some((i) =>
-        i.itemId?.toLowerCase().includes(query)
+        (i.itemId || "").toLowerCase().includes(query)
       )
     );
   });
