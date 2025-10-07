@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function Dashboard({ data }) {
+export default function Dashboard({ data, setData }) {
   const leaves = data?.leaves || [];
   const [activeTab, setActiveTab] = useState("overview"); // overview | applicants
   const [showApplicationForm, setShowApplicationForm] = useState(false);
@@ -20,7 +20,12 @@ export default function Dashboard({ data }) {
       alert("Please fill in all required fields.");
       return;
     }
-    const newApplicant = { ...applicant, id: Date.now(), status: "Pending" };
+    const newApplicant = {
+      ...applicant,
+      id: Date.now(),
+      status: "Pending",
+      interviewDate: "",
+    };
     setData({
       ...data,
       applicants: [...(data.applicants || []), newApplicant],
@@ -35,9 +40,25 @@ export default function Dashboard({ data }) {
     setData({
       ...data,
       applicants: data.applicants.map((a) =>
-        a.id === id ? { ...a, status } : a
+        a.id === id
+          ? {
+              ...a,
+              status: status === "Approved" ? "Interview Scheduled" : status,
+            }
+          : a
       ),
     });
+  };
+
+  // Update interview date
+  const updateInterviewDate = (id, date) => {
+    setData({
+      ...data,
+      applicants: data.applicants.map((a) =>
+        a.id === id ? { ...a, interviewDate: date } : a
+      ),
+    });
+    alert("Interview scheduled successfully!");
   };
 
   // Delete applicant
@@ -175,6 +196,7 @@ export default function Dashboard({ data }) {
                   <th className="border px-3 py-2 text-left">Position</th>
                   <th className="border px-3 py-2 text-left">Resume</th>
                   <th className="border px-3 py-2 text-left">Status</th>
+                  <th className="border px-3 py-2 text-left">Interview Date</th>
                   <th className="border px-3 py-2 text-left">Actions</th>
                 </tr>
               </thead>
@@ -186,6 +208,20 @@ export default function Dashboard({ data }) {
                     <td className="border px-3 py-2">{a.position}</td>
                     <td className="border px-3 py-2">{a.resume || "N/A"}</td>
                     <td className="border px-3 py-2">{a.status}</td>
+                    <td className="border px-3 py-2">
+                      {a.status === "Interview Scheduled" ? (
+                        <input
+                          type="date"
+                          value={a.interviewDate || ""}
+                          onChange={(e) =>
+                            updateInterviewDate(a.id, e.target.value)
+                          }
+                          className="border p-1 rounded"
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td className="border px-3 py-2">
                       {a.status === "Pending" && (
                         <>
