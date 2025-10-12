@@ -4,6 +4,12 @@ import { Link, useLocation } from "react-router-dom";
 
 const categories = [
   {
+    label: "Customer Service",
+    links: [
+      { path: "/customer-service", label: "Helpdesk" }
+    ]
+  },
+  {
     label: "Procurement",
     links: [
       { path: "/procurement", label: "Procurement Home" },

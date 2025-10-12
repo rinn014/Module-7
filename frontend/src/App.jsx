@@ -27,6 +27,7 @@ import Employees from "./pages/HR/Employees";
 import Leaves from "./pages/HR/Leaves";
 import PayrollEmployee from "./pages/HR/Payroll";
 import Salary from "./pages/HR/Salary";
+import CustomerService from "./pages/Customer Service/CustomerService";
 
 function App() {
   const loadData = () => {
@@ -82,6 +83,9 @@ function App() {
             <Route path="/hr/leaves" element={<Leaves data={data} setData={setData} />} />
             <Route path="/hr/payroll-employee" element={<PayrollEmployee data={data} setData={setData} />} />
             <Route path="/hr/salary" element={<Salary data={data} setData={setData} />} />
+
+            {/* Customer Service / Helpdesk */}
+            <Route path="/customer-service" element={<CustomerService />} />
           </Routes>
         </div>
       </div>
