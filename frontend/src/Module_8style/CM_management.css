@@ -58,3 +58,4 @@ select, input {
 }
 input:focus, select:focus {
   border-color: #ee7829;
+}
