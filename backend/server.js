@@ -12,6 +12,8 @@ const requisitionRoutes = require("./routes/requisition.routes");
 const purchaseOrderRoutes = require("./routes/purchaseOrder.routes");
 const invoiceRoutes = require("./routes/invoice.routes");
 const financeRoutes = require("./routes/finance");
+const attendanceRoutes = require("./routes/attendance.routes");
+const leaveRoutes = require("./routes/leave.routes");
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use("/api/requisitions", requisitionRoutes);
 app.use("/api/purchase-orders", purchaseOrderRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/finance", financeRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/leaves", leaveRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
