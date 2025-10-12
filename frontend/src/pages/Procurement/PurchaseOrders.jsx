@@ -15,7 +15,7 @@ export default function PurchaseOrders() {
   });
   const [editingId, setEditingId] = useState(null);
 
-  //Fetch data
+  // Fetch data
   const fetchData = async () => {
     try {
       const [poRes, reqRes, supRes] = await Promise.all([
@@ -29,12 +29,12 @@ export default function PurchaseOrders() {
         reqRes.json(),
         supRes.json(),
       ]);
-      
-    setPurchaseOrders(pos);
-    setRequisitions(
-      (reqs.data || reqs).filter((r) => r.status === "approved")
-    );
-    setSuppliers(sups.data || sups);
+
+      setPurchaseOrders(pos);
+      setRequisitions(
+        (reqs.data || reqs).filter((r) => r.status === "approved")
+      );
+      setSuppliers(sups.data || sups);
     } catch (err) {
       console.error("Error fetching data:", err);
     }
@@ -44,7 +44,30 @@ export default function PurchaseOrders() {
     fetchData();
   }, []);
 
-  //Submit form (Add or Update)
+  // 🔹 Fetch requisition details when selected
+  const handleRequisitionSelect = async (id) => {
+    setForm((prev) => ({ ...prev, requisitionId: id }));
+
+    if (!id) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/requisitions/${id}`);
+      const data = await res.json();
+
+      // Autofill details from requisition
+      setForm((prev) => ({
+        ...prev,
+        description: data.description || "",
+        quantity: data.quantity || 1,
+        unitPrice: data.unitPrice || "",
+        expectedDelivery: data.expectedDelivery || data.deliveryDate || "",
+      }));
+    } catch (error) {
+      console.error("Error fetching requisition details:", error);
+    }
+  };
+
+  // Submit form (Add or Update)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,7 +91,7 @@ export default function PurchaseOrders() {
     const method = editingId ? "PUT" : "POST";
     const url = editingId
       ? `http://localhost:8000/api/purchase-orders/${editingId}`
-      : "http://localhost:8000/api/purchase-orders"; //endpoint
+      : "http://localhost:8000/api/purchase-orders";
 
     try {
       const res = await fetch(url, {
@@ -102,7 +125,7 @@ export default function PurchaseOrders() {
     }
   };
 
-  //Delete PO
+  // Delete PO
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this purchase order?")) return;
     await fetch(`http://localhost:8000/api/purchase-orders/${id}`, {
@@ -111,7 +134,7 @@ export default function PurchaseOrders() {
     fetchData();
   };
 
-  //Edit PO
+  // Edit PO
   const handleEdit = (po) => {
     setForm({
       requisitionId: po.requisitionId?._id || "",
@@ -134,10 +157,11 @@ export default function PurchaseOrders() {
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-lg shadow mb-6"
       >
+        {/* Approved Requisition Dropdown */}
         <select
           className="border p-2 rounded"
           value={form.requisitionId}
-          onChange={(e) => setForm({ ...form, requisitionId: e.target.value })}
+          onChange={(e) => handleRequisitionSelect(e.target.value)}
           required
         >
           <option value="">Select Approved Requisition</option>
@@ -148,6 +172,7 @@ export default function PurchaseOrders() {
           ))}
         </select>
 
+        {/* Supplier Dropdown */}
         <select
           className="border p-2 rounded"
           value={form.supplierId}
@@ -162,6 +187,7 @@ export default function PurchaseOrders() {
           ))}
         </select>
 
+        {/* Item Description */}
         <input
           type="text"
           placeholder="Item Description"
@@ -170,6 +196,8 @@ export default function PurchaseOrders() {
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           required
         />
+
+        {/* Quantity */}
         <input
           type="number"
           placeholder="Quantity"
@@ -179,6 +207,8 @@ export default function PurchaseOrders() {
           onChange={(e) => setForm({ ...form, quantity: e.target.value })}
           required
         />
+
+        {/* Unit Price */}
         <input
           type="number"
           placeholder="Unit Price"
@@ -188,6 +218,8 @@ export default function PurchaseOrders() {
           onChange={(e) => setForm({ ...form, unitPrice: e.target.value })}
           required
         />
+
+        {/* Expected Delivery (auto-filled if available) */}
         <input
           type="date"
           className="border p-2 rounded"
@@ -196,6 +228,8 @@ export default function PurchaseOrders() {
             setForm({ ...form, expectedDelivery: e.target.value })
           }
         />
+
+        {/* Notes / Terms */}
         <textarea
           placeholder="Notes / Terms"
           className="border p-2 rounded col-span-full"
@@ -235,7 +269,9 @@ export default function PurchaseOrders() {
                 <td className="border p-2">{po.requisitionId?.name || "—"}</td>
                 <td className="border p-2">{po.supplierId?.name || "—"}</td>
                 <td className="border p-2">{po.items[0]?.description}</td>
-                <td className="border p-2 text-center">{po.items[0]?.quantity}</td>
+                <td className="border p-2 text-center">
+                  {po.items[0]?.quantity}
+                </td>
                 <td className="border p-2 text-right">
                   ₱{po.totalAmount?.toLocaleString()}
                 </td>
