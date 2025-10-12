@@ -1,42 +1,60 @@
 .aftersales-container {
-  background: #1e1e1e;
-  color: white;
-  padding: 30px;
-  border-radius: 15px;
-  max-width: 800px;
-  margin: 40px auto;
-  font-family: "Poppins", sans-serif;
-  box-shadow: 0 0 15px rgba(238, 120, 41, 0.3);
+  width: 100vw;
+  min-width: 100vw;
+  max-width: 100vw;
+  background: linear-gradient(90deg, #232526 0%, #414345 100%);
+  color: #f5f5f5;
+  padding: 30px 0;
+  border-radius: 0;
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  box-shadow: 0 4px 24px rgba(34, 34, 34, 0.15);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h2, h3 {
   text-align: center;
   color: #ee7829;
   margin-bottom: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .form-card {
-  background: #2c2c2c;
-  padding: 20px;
+  background: #fff;
+  color: #232526;
+  padding: 24px 32px;
   border-radius: 12px;
   margin-bottom: 25px;
+  box-shadow: 0 2px 12px rgba(34, 34, 34, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+  width: 100%;
+  max-width: 700px;
 }
 
 label {
-  font-weight: bold;
+  font-weight: 500;
   margin-top: 10px;
+  margin-bottom: 4px;
+  color: #414345;
 }
 
 input {
-  padding: 10px;
-  border: none;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   outline: none;
-  background: #3a3a3a;
-  color: white;
+  background: #f7f7f7;
+  color: #232526;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+input:focus {
+  border-color: #ee7829;
 }
 
 input::placeholder {
@@ -60,26 +78,35 @@ button:hover {
 }
 
 .case-card {
-  background: #2c2c2c;
-  padding: 15px;
-  margin: 15px 0;
+  background: #fff;
+  color: #232526;
+  padding: 24px 32px;
+  margin: 20px 0;
   border-radius: 12px;
   transition: 0.3s;
   border-left: 5px solid #ee7829;
+  font-size: 1.15rem;
+  box-shadow: 0 2px 12px rgba(34, 34, 34, 0.08);
+  word-break: break-word;
 }
 
 .case-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0 10px rgba(238, 120, 41, 0.4);
+  box-shadow: 0 4px 16px rgba(238, 120, 41, 0.15);
 }
 
 select {
-  background: #3a3a3a;
-  color: white;
-  border: none;
-  padding: 8px;
+  background: #f7f7f7;
+  color: #232526;
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
   border-radius: 8px;
   margin-top: 10px;
+  font-size: 1rem;
+}
+  margin-bottom: 12px;
+  line-height: 1.6;
+  font-size: 1.15rem;
 }
 
 .status {
