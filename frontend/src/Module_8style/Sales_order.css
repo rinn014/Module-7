@@ -60,7 +60,7 @@ input, select {
 }
 input:focus, select:focus {
   border-color: #ee7829;
-
+}
 .btn-primary {
   background: #ee7829;
   color: #fff;

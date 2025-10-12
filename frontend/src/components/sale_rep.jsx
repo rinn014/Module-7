@@ -66,7 +66,7 @@ function SalesReport() {
       <h3>Sales Data</h3>
       <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
         <thead>
-          <tr style={{ background: "#9e1414ff" }}>
+          <tr style={{ background: "#e0d9d9ff" }}>
             <th>Date</th>
             <th>Product</th>
             <th>Region</th>
