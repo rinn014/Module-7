@@ -278,119 +278,381 @@ export default function HelpdeskSystem() {
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-900">
-      <header className="bg-gradient-to-r from-blue-600 to-sky-300 text-white p-4">
-        <h1 className="text-lg font-bold">Customer Service: Helpdesk</h1>
-        <nav className="mt-2 flex gap-2">
-          <button className={`border px-3 py-1 rounded ${panel === "tickets" ? "bg-white text-blue-600 font-semibold" : "bg-transparent text-white"}`} onClick={() => setPanel("tickets")}>Tickets</button>
-          <button className={`border px-3 py-1 rounded ${panel === "portal" ? "bg-white text-blue-600 font-semibold" : "bg-transparent text-white"}`} onClick={() => setPanel("portal")}>Self-Service Portal</button>
-          <button className={`border px-3 py-1 rounded ${panel === "reports" ? "bg-white text-blue-600 font-semibold" : "bg-transparent text-white"}`} onClick={() => setPanel("reports")}>SLA Reports</button>
-        </nav>
-      </header>
+      <header className="bg-gradient-to-r from-blue-600 to-sky-300 text-white p-6 shadow-md">
+  <div className="text-center mb-4 border-b border-blue-200 pb-3">
+    <h1 className="text-2xl font-extrabold tracking-wide drop-shadow">
+      CUSTOMER SERVICE: HELPDESK
+    </h1>
+  </div>
+  <nav className="flex justify-center gap-4">
+    <button
+      className={`border px-4 py-2 rounded-lg transition ${
+        panel === "tickets"
+          ? "bg-white text-blue-700 font-semibold shadow"
+          : "bg-transparent text-white hover:bg-white/20"
+      }`}
+      onClick={() => setPanel("tickets")}
+    >
+      Tickets
+    </button>
+    <button
+      className={`border px-4 py-2 rounded-lg transition ${
+        panel === "portal"
+          ? "bg-white text-blue-700 font-semibold shadow"
+          : "bg-transparent text-white hover:bg-white/20"
+      }`}
+      onClick={() => setPanel("portal")}
+    >
+      Self-Service Portal
+    </button>
+    <button
+      className={`border px-4 py-2 rounded-lg transition ${
+        panel === "reports"
+          ? "bg-white text-blue-700 font-semibold shadow"
+          : "bg-transparent text-white hover:bg-white/20"
+      }`}
+      onClick={() => setPanel("reports")}
+    >
+      SLA Reports
+    </button>
+  </nav>
+</header>
+
 
       <main className="max-w-5xl mx-auto p-6">
         {/* TICKETS PANEL */}
         {panel === "tickets" && (
-          <section className="flex gap-6">
-            {/* Create Ticket & Filters */}
-            <div className="flex-1 bg-white rounded shadow p-4">
-              <h2 className="text-xl font-semibold mb-2">Create Ticket</h2>
-              <form className="flex flex-col gap-2" onSubmit={handleCreateTicket}>
-                <input name="customer" value={form.customer} onChange={handleFormChange} placeholder="Customer name" required className="border rounded px-2 py-1" />
-                <input name="subject" value={form.subject} onChange={handleFormChange} placeholder="Subject" required className="border rounded px-2 py-1" />
-                <textarea name="description" value={form.description} onChange={handleFormChange} rows={3} placeholder="Description" required className="border rounded px-2 py-1" />
-                <div className="flex gap-2">
-                  <select name="priority" value={form.priority} onChange={handleFormChange} className="border rounded px-2 py-1 w-1/3">
-                    <option>Low</option><option>Medium</option><option>High</option>
-                  </select>
-                  <input name="agent" value={form.agent} onChange={handleFormChange} placeholder="Assign agent" className="border rounded px-2 py-1 flex-1" />
-                  <input name="sla_hours" type="number" min="1" value={form.sla_hours} onChange={handleFormChange} className="border rounded px-2 py-1 w-32" />
-                </div>
-                <div className="flex gap-2">
-                  <button type="submit" className="bg-blue-600 text-white rounded px-4 py-2 mt-2">Create Ticket</button>
-                  <button type="button" className="border px-3 py-2 mt-2" onClick={() => { setForm({ customer: "", subject: "", description: "", priority: "Medium", agent: "", sla_hours: 24 }); }}>Clear</button>
-                </div>
-              </form>
+  <section className="flex justify-center gap-6 items-start flex-wrap">
+    {/* LEFT COLUMN: Create Ticket + Search/Filter */}
+    <div className="flex flex-col gap-6 w-full md:w-[60%]">
+      {/* CREATE TICKET SECTION */}
+      <div className="border-2 border-blue-300 bg-white rounded-xl shadow p-5">
+        <h2 className="text-xl font-semibold mb-3 text-blue-700 text-center">
+          🎫 Create Ticket
+        </h2>
+        <form className="flex flex-col gap-3" onSubmit={handleCreateTicket}>
+          <input
+            name="customer"
+            value={form.customer}
+            onChange={handleFormChange}
+            placeholder="Customer name"
+            required
+            className="border rounded px-3 py-2 w-full"
+          />
+          <input
+            name="subject"
+            value={form.subject}
+            onChange={handleFormChange}
+            placeholder="Subject"
+            required
+            className="border rounded px-3 py-2 w-full"
+          />
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleFormChange}
+            rows={3}
+            placeholder="Description"
+            required
+            className="border rounded px-3 py-2 w-full"
+          />
+          <div className="flex flex-wrap gap-3">
+            <select
+              name="priority"
+              value={form.priority}
+              onChange={handleFormChange}
+              className="border rounded px-3 py-2 flex-1 min-w-[120px]"
+            >
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+            <input
+              name="agent"
+              value={form.agent}
+              onChange={handleFormChange}
+              placeholder="Assign agent"
+              className="border rounded px-3 py-2 flex-1"
+            />
+            <input
+              name="sla_hours"
+              type="number"
+              min="1"
+              value={form.sla_hours}
+              onChange={handleFormChange}
+              className="border rounded px-3 py-2 w-32"
+            />
+          </div>
+          <div className="flex justify-center gap-3 mt-3">
+  <button
+    type="submit"
+    className="bg-green-600 text-white rounded px-5 py-2 shadow hover:bg-green-800 transition"
+  >
+    Create
+  </button>
+  <button
+    type="button"
+    className="bg-red-500 text-white rounded px-5 py-2 shadow hover:bg-red-700 transition"
+    onClick={() =>
+      setForm({
+        customer: "",
+        subject: "",
+        description: "",
+        priority: "Medium",
+        agent: "",
+        sla_hours: 24,
+      })
+    }
+  >
+    Clear
+  </button>
+          </div>
+        </form>
+      </div>
 
-              <h3 className="mt-6 mb-2 font-semibold">Search / Filters</h3>
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by customer or subject" className="border rounded px-2 py-1 mb-2 w-full" />
-              <div className="flex gap-2 mb-2">
-                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border rounded px-2 py-1">
-                  <option value="">All Status</option><option>Open</option><option>In Progress</option><option>Resolved</option><option>Closed</option><option>Escalated</option>
-                </select>
-                <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="border rounded px-2 py-1">
-                  <option value="">All Priority</option><option>Low</option><option>Medium</option><option>High</option>
-                </select>
-                <button className="border px-2 rounded" onClick={() => { setFilterStatus(""); setFilterPriority(""); setSearch(""); }}>Clear</button>
-              </div>
+      {/* SEARCH / FILTER + SUBMITTED TICKETS */}
+      <div className="border-2 border-gray-300 bg-gray-50 rounded-xl shadow p-5">
+        <h3 className="text-lg font-semibold mb-3 text-gray-700 text-center">
+          🔍 Search / Filter & Submitted Tickets
+        </h3>
 
-              <ul className="divide-y">
-                {filteredTickets.map((t) => (
-                  <li key={t.id} className="py-2 cursor-pointer hover:bg-blue-50" onClick={() => openDetail(t)}>
-                    <div className="font-semibold">{t.subject} <span className="text-xs text-gray-500">({t.priority})</span></div>
-                    <div className="text-sm text-gray-600">{t.customer} {t.agent ? <span className="text-xs text-gray-400">• {t.agent}</span> : null}</div>
-                    <div className="text-xs text-gray-400">{t.status} • {new Date(t.created).toLocaleString()} • SLA: {formatRemaining(t.__remaining_hours)}</div>
-                  </li>
-                ))}
-                {filteredTickets.length === 0 && <li className="py-2 text-gray-400">No tickets found.</li>}
-              </ul>
-            </div>
+        {/* SEARCH / FILTER BAR */}
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by customer or subject"
+          className="border rounded px-3 py-2 mb-3 w-full"
+        />
+        <div className="flex flex-wrap gap-3 justify-center mb-4">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border rounded px-3 py-2"
+          >
+            <option value="">All Status</option>
+            <option>Open</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+            <option>Closed</option>
+            <option>Escalated</option>
+          </select>
+          <select
+            value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value)}
+            className="border rounded px-3 py-2"
+          >
+            <option value="">All Priority</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+          <button
+            className="border rounded px-3 py-2 hover:bg-red-500"
+            onClick={() => {
+              setFilterStatus("");
+              setFilterPriority("");
+              setSearch("");
+            }}
+          >
+            Clear
+            
+          </button>
+        </div>
 
-            {/* Ticket Detail */}
-            {showDetail && detailTicket && (
-              <div className="w-96 bg-white rounded shadow p-4 relative">
-                <button className="absolute top-2 right-2 text-gray-500" onClick={closeDetail}>×</button>
-                <h2 className="text-lg font-bold mb-1">{detailTicket.subject}</h2>
-                <div className="text-sm mb-1"><b>Customer:</b> {detailTicket.customer}</div>
-                <div className="text-sm mb-1"><b>Agent:</b>
-                  <input className="border rounded px-2 py-1 ml-2 text-sm" defaultValue={detailTicket.agent} onBlur={(e) => updateTicketField(detailTicket.id, { agent: e.target.value })} />
+            {/* SUBMITTED TICKETS LIST */}
+        <div className="bg-white border border-gray-200 rounded-lg p-3 max-h-96 overflow-y-auto">
+          <h4 className="font-semibold mb-2 text-gray-800 text-center">
+            🧾 Submitted Tickets ({filteredTickets.length})
+          </h4>
+          <ul className="divide-y">
+            {filteredTickets.map((t) => (
+              <li
+                key={t.id}
+                className="py-2 px-2 cursor-pointer hover:bg-blue-50 rounded"
+                onClick={() => openDetail(t)}
+              >
+                <div className="font-semibold">
+                  {t.subject}{" "}
+                  <span className="text-xs text-gray-500">
+                    ({t.priority})
+                  </span>
                 </div>
-                <div className="text-sm mb-1"><b>Priority:</b>
-                  <select className="border rounded px-2 py-1 ml-2 text-sm" defaultValue={detailTicket.priority} onChange={(e) => updateTicketField(detailTicket.id, { priority: e.target.value })}>
-                    <option>Low</option><option>Medium</option><option>High</option>
-                  </select>
+                <div className="text-sm text-gray-600">
+                  {t.customer}{" "}
+                  {t.agent ? (
+                    <span className="text-xs text-gray-400">• {t.agent}</span>
+                  ) : null}
                 </div>
-                <div className="text-sm mb-1"><b>SLA (hrs):</b>
-                  <input className="border rounded px-2 py-1 ml-2 w-24 text-sm" type="number" defaultValue={detailTicket.sla_hours} onBlur={(e) => updateTicketField(detailTicket.id, { sla_hours: Number(e.target.value) })} />
+                <div className="text-xs text-gray-400">
+                  {t.status} • {new Date(t.created).toLocaleString()} • SLA:{" "}
+                  {formatRemaining(t.__remaining_hours)}
                 </div>
-                <div className="text-sm mb-2"><b>Status:</b> <span className={`px-2 py-0.5 rounded text-xs ${detailTicket.status === "Escalated" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>{detailTicket.status}</span></div>
-
-                <h3 className="font-semibold mt-3 mb-1">Description</h3>
-                <div className="text-sm text-gray-700 mb-2">{detailTicket.description}</div>
-
-                <h3 className="font-semibold mt-2 mb-1">Internal Notes</h3>
-                <ul className="text-xs mb-2 list-disc list-inside text-gray-600 max-h-24 overflow-y-auto">
-                  {(detailTicket.updates || []).map((u, i) => <li key={i}>{u}</li>)}
-                </ul>
-                <textarea value={internalNote} onChange={(e) => setInternalNote(e.target.value)} placeholder="Add internal note..." className="border rounded w-full px-2 py-1 text-sm" />
-                <button onClick={() => addInternalNote(detailTicket.id)} className="bg-blue-600 text-white rounded px-3 py-1 mt-1 text-sm">Add Note</button>
-
-                <h3 className="font-semibold mt-3 mb-1">Messages</h3>
-                <ul className="max-h-28 overflow-y-auto text-sm border rounded p-2 bg-gray-50">
-                  {(detailTicket.messages || []).map((m) => (
-                    <li key={m.id} className="mb-1"><b>{m.from}:</b> {m.text} <span className="text-xs text-gray-400">• {new Date(m.time).toLocaleString()}</span></li>
-                  ))}
-                </ul>
-                <div className="flex gap-2 mt-2">
-                  <input placeholder="Type message..." value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { sendMessage(detailTicket.id, messageText); }}} className="border rounded px-2 py-1 flex-1 text-sm" />
-                  <button onClick={() => sendMessage(detailTicket.id, messageText)} className="border px-3 py-1 text-sm">Send</button>
-                </div>
-
-                <div className="flex gap-2 mt-3">
-                  <button onClick={() => updateTicketStatus(detailTicket.id, "In Progress")} className="text-xs border px-2 py-1 rounded">In Progress</button>
-                  <button onClick={() => updateTicketStatus(detailTicket.id, "Resolved")} className="text-xs border px-2 py-1 rounded">Resolved</button>
-                  <button onClick={() => updateTicketStatus(detailTicket.id, "Closed")} className="text-xs border px-2 py-1 rounded">Closed</button>
-                  <button onClick={() => removeTicket(detailTicket.id)} className="text-xs border px-2 py-1 rounded text-red-600">Remove</button>
-                </div>
-              </div>
+              </li>
+            ))}
+            {filteredTickets.length === 0 && (
+              <li className="py-2 text-gray-400 text-center">
+                No tickets found.
+              </li>
             )}
-          </section>
-        )}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    {/* RIGHT COLUMN: TICKET DETAIL */}
+    {showDetail && detailTicket && (
+      <div className="w-full md:w-[35%] bg-white rounded-xl border-2 border-blue-300 shadow p-5 sticky top-6 self-start">
+        <button
+          className="absolute top-2 right-4 text-gray-500 text-xl"
+          onClick={closeDetail}
+        >
+          ×
+        </button>
+        <h2 className="text-lg font-bold mb-1 text-center text-blue-700">
+          {detailTicket.subject}
+        </h2>
+        <div className="text-sm mb-1">
+          <b>Customer:</b> {detailTicket.customer}
+        </div>
+        <div className="text-sm mb-1">
+          <b>Agent:</b>{" "}
+          <input
+            className="border rounded px-2 py-1 ml-1 text-sm"
+            defaultValue={detailTicket.agent}
+            onBlur={(e) =>
+              updateTicketField(detailTicket.id, { agent: e.target.value })
+            }
+          />
+        </div>
+        <div className="text-sm mb-1">
+          <b>Priority:</b>{" "}
+          <select
+            className="border rounded px-2 py-1 ml-1 text-sm"
+            defaultValue={detailTicket.priority}
+            onChange={(e) =>
+              updateTicketField(detailTicket.id, { priority: e.target.value })
+            }
+          >
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div className="text-sm mb-1">
+          <b>SLA (hrs):</b>{" "}
+          <input
+            className="border rounded px-2 py-1 ml-1 w-20 text-sm"
+            type="number"
+            defaultValue={detailTicket.sla_hours}
+            onBlur={(e) =>
+              updateTicketField(detailTicket.id, {
+                sla_hours: Number(e.target.value),
+              })
+            }
+          />
+        </div>
+        <div className="text-sm mb-3">
+          <b>Status:</b>{" "}
+          <span
+            className={`px-2 py-0.5 rounded text-xs ${
+              detailTicket.status === "Escalated"
+                ? "bg-red-100 text-red-700"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {detailTicket.status}
+          </span>
+        </div>
+
+        <h3 className="font-semibold mt-3 mb-1">Description</h3>
+        <p className="text-sm text-gray-700 mb-2">
+          {detailTicket.description}
+        </p>
+
+        <h3 className="font-semibold mt-3 mb-1">Internal Notes</h3>
+        <ul className="text-xs mb-2 list-disc list-inside text-gray-600 max-h-24 overflow-y-auto">
+          {(detailTicket.updates || []).map((u, i) => (
+            <li key={i}>{u}</li>
+          ))}
+        </ul>
+        <textarea
+          value={internalNote}
+          onChange={(e) => setInternalNote(e.target.value)}
+          placeholder="Add internal note..."
+          className="border rounded w-full px-2 py-1 text-sm"
+        />
+        <button
+  onClick={() => addInternalNote(detailTicket.id)}
+  className="bg-blue-600 text-white rounded px-3 py-2 mt-1 text-sm hover:bg-blue-800 transition"
+>
+  Add Note
+</button>
+
+        <h3 className="font-semibold mt-3 mb-1">Messages</h3>
+        <ul className="max-h-28 overflow-y-auto text-sm border rounded p-2 bg-gray-50">
+          {(detailTicket.messages || []).map((m) => (
+            <li key={m.id} className="mb-1">
+              <b>{m.from}:</b> {m.text}{" "}
+              <span className="text-xs text-gray-400">
+                • {new Date(m.time).toLocaleString()}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex gap-2 mt-2">
+          <input
+            placeholder="Type message..."
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage(detailTicket.id, messageText);
+            }}
+            className="border rounded px-2 py-1 flex-1 text-sm"
+          />
+         <button
+  onClick={() => sendMessage(detailTicket.id, messageText)}
+  className="bg-blue-600 text-white rounded px-3 py-2 mt-1 text-sm hover:bg-blue-800 transition"
+>
+  Send
+</button>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mt-4 justify-center">
+          <button
+            onClick={() => updateTicketStatus(detailTicket.id, "In Progress")}
+            className="border rounded px-3 py-1 hover:bg-blue-500"
+          >
+            In Progress
+          </button>
+          <button
+            onClick={() => updateTicketStatus(detailTicket.id, "Resolved")}
+            className="border rounded px-3 py-1 hover:bg-blue-500"
+          >
+            Resolved
+          </button>
+          <button
+            onClick={() => updateTicketStatus(detailTicket.id, "Closed")}
+            className="border rounded px-3 py-1 hover:bg-blue-500"
+          >
+            Closed
+          </button>
+          <button
+            onClick={() => removeTicket(detailTicket.id)}
+            className="bg-red-600 text-white order rounded px-3 py-1 rounded hover:bg-red-700 transition"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    )}
+  </section>
+)}
 
         {/* PORTAL */}
         {panel === "portal" && (
-          <section className="bg-white rounded shadow p-4">
+          <section className="bg-white rounded shadow p-18">
             <h2 className="text-xl font-semibold mb-2">Self-Service Portal</h2>
-            <input placeholder="Search articles..." value={search} onChange={(e) => setSearch(e.target.value)} className="border rounded px-2 py-1 mb-3 w-full" />
+            <input placeholder="Search articles..." value={search} onChange={(e) => setSearch(e.target.value)} className="border rounded px-2 py-5 mb-7 w-full" />
             <ul className="divide-y">
               {articles.filter(a => a.title.toLowerCase().includes(search.toLowerCase()) || a.body.toLowerCase().includes(search.toLowerCase())).map((a) => (
                 <li key={a.id} className="py-2">
@@ -398,7 +660,7 @@ export default function HelpdeskSystem() {
                   <div className="text-sm text-gray-600 mb-1">{a.body}</div>
                   <div className="text-xs text-gray-500">
                     Helpful?{" "}
-                    <button onClick={() => rateArticle(a.id, true)} className="text-green-600 mr-2">Yes ({a.helpful})</button>
+                    <button onClick={() => rateArticle(a.id, true)} className="text-green-600 mr-3">Yes ({a.helpful})</button>
                     <button onClick={() => rateArticle(a.id, false)} className="text-red-600">No ({a.notHelpful})</button>
                   </div>
                 </li>
@@ -410,23 +672,23 @@ export default function HelpdeskSystem() {
         {/* REPORTS */}
         {panel === "reports" && (
           <section className="bg-white rounded shadow p-4">
-            <h2 className="text-xl font-semibold mb-3">SLA Reports</h2>
+            <h2 className="text-center font-semibold mb-4 border-b border-blue-200 pb-3">SLA Reports</h2> 
             <div className="mb-3 flex gap-2">
-              <button className="bg-blue-600 text-white rounded px-4 py-2" onClick={exportCSV}>Export CSV</button>
+              <button className="bg-blue-600 text-white rounded px-2 py-1" onClick={exportCSV}>Export CSV</button>
              
             </div>
             <table className="w-full border">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border px-2 py-1">Status</th>
-                  <th className="border px-2 py-1">Count</th>
+                <tr className="bg-gray-300">
+                  <th className="border px-20 py-5">Status</th>
+                  <th className="border px-20 py-5">Count</th>
                 </tr>
               </thead>
               <tbody>
                 {Object.entries(slaReport).map(([status, count]) => (
                   <tr key={status}>
                     <td className="border px-2 py-1">{status}</td>
-                    <td className="border px-2 py-1">{count}</td>
+                    <td className="border px-2 py-4">{count}</td>
                   </tr>
                 ))}
               </tbody>
