@@ -104,6 +104,8 @@ select {
   margin-top: 10px;
   font-size: 1rem;
 }
+
+.case-card p {
   margin-bottom: 12px;
   line-height: 1.6;
   font-size: 1.15rem;
