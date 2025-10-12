@@ -22,6 +22,11 @@ const InvoiceSchema = new mongoose.Schema(
       default: "Good",
     },
     notes: String,
+    invoiceNumber: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
   { timestamps: true }
 );

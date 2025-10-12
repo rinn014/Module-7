@@ -291,7 +291,7 @@ export default function Requisition() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((r) => (
+            {filteredRequisitions.map((r) => (
               <tr key={r._id} className="hover:bg-gray-50">
                 <td className="border p-2">{r.name}</td>
                 <td className="border p-2">{r.department}</td>

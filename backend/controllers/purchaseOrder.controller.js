@@ -4,9 +4,15 @@ const Supplier = require("../models/Supplier");
 
 //Helper to auto-generate PO number
 async function generatePONumber() {
-  const count = await PurchaseOrder.countDocuments();
-  const num = String(count + 1).padStart(4, "0");
-  return `PO-${num}`;
+  const lastPO = await PurchaseOrder.findOne({})
+    .sort({ createdAt: -1 })
+    .select("poNumber");
+  let num = 1;
+  if (lastPO && lastPO.poNumber) {
+    const match = lastPO.poNumber.match(/PO-(\d+)/);
+    if (match) num = parseInt(match[1], 10) + 1;
+  }
+  return `PO-${String(num).padStart(4, "0")}`;
 }
 
 //Create Purchase Order
