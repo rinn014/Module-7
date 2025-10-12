@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Sales_order from "./components/Sales_order"
 import CM_management from "./components/CM_management"
 import After_Sales from "./components/After_Sales"
-
+import Sales_report from "./components/Sales_report"
 function App() {
 
   return (
@@ -18,8 +18,8 @@ function App() {
       {/* Function 3 */}
       <After_Sales />
 
-      {/* Function 4 */}
-      
+  {/* Function 4 */}
+  <Sales_report />
     </div>
   )
 }
