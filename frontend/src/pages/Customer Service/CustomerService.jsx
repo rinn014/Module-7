@@ -279,7 +279,7 @@ export default function HelpdeskSystem() {
   return (
     <div className="bg-gray-50 min-h-screen text-gray-900">
       <header className="bg-gradient-to-r from-blue-600 to-sky-300 text-white p-4">
-        <h1 className="text-lg font-bold">ERP Module 2 — Customer Service / Helpdesk</h1>
+        <h1 className="text-lg font-bold">Customer Service: Helpdesk</h1>
         <nav className="mt-2 flex gap-2">
           <button className={`border px-3 py-1 rounded ${panel === "tickets" ? "bg-white text-blue-600 font-semibold" : "bg-transparent text-white"}`} onClick={() => setPanel("tickets")}>Tickets</button>
           <button className={`border px-3 py-1 rounded ${panel === "portal" ? "bg-white text-blue-600 font-semibold" : "bg-transparent text-white"}`} onClick={() => setPanel("portal")}>Self-Service Portal</button>
@@ -413,7 +413,7 @@ export default function HelpdeskSystem() {
             <h2 className="text-xl font-semibold mb-3">SLA Reports</h2>
             <div className="mb-3 flex gap-2">
               <button className="bg-blue-600 text-white rounded px-4 py-2" onClick={exportCSV}>Export CSV</button>
-              <button className="border px-3 py-2" onClick={() => { alert(JSON.stringify(slaReport, null, 2)); }}>Show JSON</button>
+             
             </div>
             <table className="w-full border">
               <thead>
