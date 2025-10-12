@@ -96,13 +96,13 @@ export default function Requisition() {
   };
 
   //Delete
-  const handleDelete = async (id) => {
+  {/*const handleDelete = async (id) => {
     if (!window.confirm("Delete this requisition?")) return;
     await fetch(`http://localhost:8000/api/requisitions/${id}`, {
       method: "DELETE",
     });
     setRequisitions((prev) => prev.filter((r) => r._id !== id));
-  };
+  };*/}
 
   //Edit
   const handleEdit = (req) => {
@@ -110,13 +110,33 @@ export default function Requisition() {
     setEditingId(req._id);
   };
 
-  //Filter
-  const filtered = requisitions.filter((r) =>
-    [r.name, r.department, r.description, r.purpose]
-      .join(" ")
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  // Approve / Reject requisition
+  const handleUpdateStatus = async (id, status) => {
+    const res = await fetch(`http://localhost:8000/api/requisitions/updateRequisition/${id}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    const updated = await res.json();
+    setRequisitions(requisitions.map((r) => (r._id === id ? updated : r)));
+  };
+
+  // Delete requisition
+  const handleDelete = async (id) => {
+    await fetch(`http://localhost:8000/api/requisitions/deleteRequisition/${id}`, { method: "DELETE" });
+    setRequisitions(requisitions.filter(r => r._id !== id));
+  };
+
+  // Filter requisitions by search
+  const filteredRequisitions = requisitions.filter((r) => {
+    const query = search.toLowerCase();
+    return (
+      (r.requester || "").toLowerCase().includes(query) ||
+      r.items.some((i) =>
+        (i.itemId || "").toLowerCase().includes(query)
+      )
+    );
+  });
 
   return (
     <div className="p-6">

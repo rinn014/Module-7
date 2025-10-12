@@ -27,6 +27,70 @@ export default function Invoices() {
     fetchData();
   }, []);
 
+  // Fetch invoices
+  useEffect(() => {
+    fetch("http://localhost:8000/api/invoices/getInvoice")
+      .then((res) => res.json())
+      .then((data) => setInvoices(data))
+      .catch((err) => console.error("Error fetching invoices:", err));
+  }, []);
+
+  // Fetch suppliers and purchase orders
+  useEffect(() => {
+    fetch("http://localhost:8000/api/suppliers/getSupplier")
+      .then((res) => res.json())
+      .then((data) => setSuppliers(data));
+
+    fetch("http://localhost:8000/api/purchase-orders/getPurchaseOrder")
+      .then((res) => res.json())
+      .then((data) => setPurchaseOrders(data));
+  }, []);
+
+  // Fetch items from supplier if supplierId is manually changed
+  useEffect(() => {
+    if (form.supplierId) {
+      fetch(`http://localhost:8000/api/suppliers/${form.supplierId}/products`)
+        .then((res) => res.json())
+        .then((data) => setItems(data))
+        .catch((err) => console.error("Error fetching supplier items:", err));
+    } else {
+      setItems([]);
+    }
+  }, [form.supplierId]);
+
+  // Auto–fill supplier + items when purchase order is selected
+  useEffect(() => {
+    if (form.purchaseOrderId) {
+      const selectedPO = purchaseOrders.find(
+        (po) => po._id === form.purchaseOrderId
+      );
+      if (selectedPO) {
+        setForm((prev) => ({
+          ...prev,
+          supplierId: selectedPO.supplierId?._id || "",
+          items: selectedPO.items.map((i) => ({
+            itemId: i.itemId, // product name string
+            quantity: i.quantity,
+            unitPrice: i.price || 0,
+          })),
+        }));
+
+        // also set items dropdown options
+        if (selectedPO.supplierId?._id) {
+          fetch(
+            `http://localhost:8000/api/suppliers/${selectedPO.supplierId._id}/products`
+          )
+            .then((res) => res.json())
+            .then((data) => setItems(data));
+        }
+      }
+    }
+  }, [form.purchaseOrderId, purchaseOrders]);
+
+  const calcTotal = () =>
+    form.items.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
+
+  // Add / Update Invoice
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -44,32 +108,89 @@ export default function Invoices() {
       notes: form.notes,
     };
 
-    const res = await fetch("http://localhost:8000/api/invoices", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    try {
+      if (editingId) {
+        const res = await fetch(
+          `http://localhost:8000/api/invoices/updateInvoice/${editingId}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+        const updated = await res.json();
+        if (!res.ok) return alert("Error: " + updated.error);
+        setInvoices(
+          invoices.map((inv) => (inv._id === editingId ? updated : inv))
+        );
+        setEditingId(null);
+      } else {
+        const res = await fetch(
+          "http://localhost:8000/api/invoices/addInvoice",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+        const newInv = await res.json();
+        if (!res.ok) return alert("Error: " + newInv.error);
+        setInvoices([...invoices, newInv]);
+      }
 
-    const data = await res.json();
-    if (!res.ok) return alert("Error: " + data.error);
+      const res = await fetch("http://localhost:8000/api/invoices/addInvoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    fetchData();
+      const newInvoice = await res.json();
+      if (!res.ok) return alert("Error: " + newInvoice.error);
+
+      setInvoices([...invoices, newInvoice.invoice || newInvoice]); // invoice may be wrapped
+      setForm({
+        purchaseOrderId: "",
+        supplierId: "",
+        invoiceNumber: "",
+        items: [{ itemId: "", quantity: 1, unitPrice: 0 }],
+        remarks: "",
+      });
+    } catch (err) {
+      console.error("Request failed:", err);
+    }
+  };
+
+  // Edit Invoice
+  const handleEdit = (inv) => {
     setForm({
-      poId: "",
-      description: "",
-      quantityReceived: "",
-      receivedBy: "",
-      condition: "Good",
-      notes: "",
+      purchaseOrderId: inv.purchaseOrderId?._id || "",
+      supplierId: inv.supplierId?._id || "",
+      invoiceNumber: inv.invoiceNumber,
+      items: inv.items || [{ itemId: "", quantity: 1, unitPrice: 0 }],
+      remarks: inv.remarks || "",
     });
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this invoice?")) return;
-    await fetch(`http://localhost:8000/api/invoices/${id}`, {
+    await fetch(`http://localhost:8000/api/invoices/deleteInvoice/${id}`, {
       method: "DELETE",
     });
-    fetchData();
+    setInvoices(invoices.filter((inv) => inv._id !== id));
+  };
+
+  // Update Invoice Status
+  const handleStatusUpdate = async (id, status) => {
+    const res = await fetch(
+      `http://localhost:8000/api/invoices/updateInvoiceStatus/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      }
+    );
+    const updated = await res.json();
+    setInvoices(invoices.map((inv) => (inv._id === id ? updated : inv)));
   };
 
   return (
