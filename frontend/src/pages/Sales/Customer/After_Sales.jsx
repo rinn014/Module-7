@@ -8,27 +8,23 @@ function AfterSalesSupport() {
   ]);
   const [newCase, setNewCase] = useState({ customer: "", issue: "", status: "open", assignedTo: "Team A", satisfaction: 0 });
 
-  // This holds what the user is typing in the form before clicking "Add".
   const addCase = () => {
-    // This checks if the customer name OR issue is empty.
     if (!newCase.customer || !newCase.issue) {
       alert("Please enter customer and issue details.");
       return;
     }
-    // This adds the new case to the list of existing cases.
     setCases([...cases, { ...newCase, id: cases.length + 1 }]);
-    // After adding, this resets the form back to empty/default values.
     setNewCase({ customer: "", issue: "", status: "open", assignedTo: "Team A", satisfaction: 0 });
   };
-  //This updates the list of cases.
+
   const updateStatus = (id, status) => {
     setCases(cases.map((c) => (c.id === id ? { ...c, status } : c)));
   };
-  //This updates the list of team.
+
   const updateAssignment = (id, team) => {
     setCases(cases.map((c) => (c.id === id ? { ...c, assignedTo: team } : c)));
   };
-  //This updates the list of rating.
+
   const updateSatisfaction = (id, rating) => {
     setCases(cases.map((c) => (c.id === id ? { ...c, satisfaction: rating } : c)));
   };
@@ -41,25 +37,18 @@ function AfterSalesSupport() {
         <label>Customer Name</label>
         <input
           value={newCase.customer}
-          onChange={(e) => setNewCase({ 
-            //When you type, it updates only the customer field, keeping the rest the same using:
-            ...newCase, customer: e.target.value })}
+          onChange={(e) => setNewCase({ ...newCase, customer: e.target.value })}
         />
         <label>Issue</label>
         <input
           value={newCase.issue}
-          onChange={(e) => setNewCase({ 
-            //Updates only the issue when typing
-          ...newCase, issue: e.target.value })}
+          onChange={(e) => setNewCase({ ...newCase, issue: e.target.value })}
         />
-        // This updates the list of team.
         <label>Assign to Team</label>
         <select value={newCase.assignedTo} onChange={e => setNewCase({ ...newCase, assignedTo: e.target.value })}>
           <option value="Team A">Team A</option>
           <option value="Team B">Team B</option>
         </select>
-        
-
         <label>Satisfaction (1-5)</label>
         <input type="number" min={1} max={5} value={newCase.satisfaction} onChange={e => setNewCase({ ...newCase, satisfaction: parseInt(e.target.value) })} />
         <button onClick={addCase}>Add Case</button>

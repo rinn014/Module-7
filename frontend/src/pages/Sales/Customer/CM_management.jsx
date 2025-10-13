@@ -2,15 +2,14 @@ import { useState } from "react";
 import "../Module_8style/CM_management.css";
 
 function CRMManagement() {
-  // This holds the list of customers
   const [customers, setCustomers] = useState([
     { id: 1, name: "Alice Johnson", email: "alice@email.com", preference: "Electronics", history: "Product A", segment: "VIP", logs: ["Called for feedback", "Sent promo email"] },
     { id: 2, name: "Bob Smith", email: "bob@email.com", preference: "Home", history: "Product B", segment: "Regular", logs: ["Requested invoice", "Asked about warranty"] },
   ]);
-  // This holds what the user is typing in the form before clicking "Add".
+
   const [newCustomer, setNewCustomer] = useState({ name: "", email: "", preference: "", segment: "Regular" });
   const [selectedSegment, setSelectedSegment] = useState("");
-// This adds a new customer to the list
+
   const addCustomer = () => {
     if (!newCustomer.name || !newCustomer.email) {
       alert("Please fill in all fields.");
