@@ -506,7 +506,7 @@ export default function HelpdeskSystem() {
           className="absolute top-2 right-4 text-gray-500 text-xl"
           onClick={closeDetail}
         >
-          ×
+          
         </button>
         <h2 className="text-lg font-bold mb-1 text-center text-blue-700">
           {detailTicket.subject}
@@ -698,4 +698,4 @@ export default function HelpdeskSystem() {
       </main>
     </div>
   );
-}
+} 
