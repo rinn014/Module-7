@@ -29,6 +29,12 @@ import PayrollEmployee from "./pages/HR/Payroll";
 import Salary from "./pages/HR/Salary";
 import CustomerService from "./pages/Customer Service/CustomerService";
 
+import AfterSales from "./pages/SalesCustomer/AfterSales";
+import CMmanagement from "./pages/SalesCustomer/CMmanagement";
+import SalesOrder from "./pages/SalesCustomer/Salesorder";
+import SalesReport from "./pages/SalesCustomer/salerep";
+
+
 function App() {
   const loadData = () => {
     const saved = localStorage.getItem("ems_data_v1");
@@ -87,6 +93,13 @@ function App() {
 
             {/* Customer Service / Helpdesk */}
             <Route path="/customer-service" element={<CustomerService />} />
+
+
+            {/* Sales - Customer Management */}            
+            <Route path="/sales/customer-management" element={<CMmanagement />} />
+            <Route path="/sales/after-sales" element={<AfterSales />} />
+            <Route path="/sales/sales-order" element={<SalesOrder />} />
+            <Route path="/sales/sales-report" element={<SalesReport />} />
           </Routes>
         </div>
       </div>
