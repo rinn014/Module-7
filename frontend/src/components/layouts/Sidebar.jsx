@@ -10,6 +10,15 @@ const categories = [
     ]
   },
   {
+    label: "Sales",
+    links: [
+      { path: "/sales/customer-management", label: "Customer Management" },
+      { path: "/sales/after-sales", label: "After Sales" },
+      { path: "/sales/sales-order", label: "Orders" },
+      { path: "/sales/sales-report", label: "Reports" },
+    ]
+  },
+  {
     label: "Procurement",
     links: [
       { path: "/procurement", label: "Procurement Home" },

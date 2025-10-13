@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../Module_8style/Sales_order.css";
+import "./Module_8style/Sales_order.css";
 
 function SalesOrderManagement() {
   // Dummy customers

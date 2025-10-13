@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../Module_8style/Sales_report.css";
+import "./Module_8style/Sales_report.css";
 // Dummy data for demonstration
 const salesData = [
   { id: 1, product: "Product A", region: "North", rep: "Alice", amount: 1200, date: "2025-10-01" },

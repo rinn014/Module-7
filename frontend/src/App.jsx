@@ -29,10 +29,10 @@ import PayrollEmployee from "./pages/HR/Payroll";
 import Salary from "./pages/HR/Salary";
 import CustomerService from "./pages/Customer Service/CustomerService";
 
-import AfterSales from "./pages/Sales\Customer/After_SalesLeaves";
-import CMmanagement from "./pages/Sales/Customer/CM_management";
-import SalesOrder from "./pages/Sales/Customer/Sales_order";
-import SalesReport from "./pages/Sales/Customer/sale_rep";
+import AfterSales from "./pages/SalesCustomer/AfterSales";
+import CMmanagement from "./pages/SalesCustomer/CMmanagement";
+import SalesOrder from "./pages/SalesCustomer/Salesorder";
+import SalesReport from "./pages/SalesCustomer/salerep";
 
 
 function App() {

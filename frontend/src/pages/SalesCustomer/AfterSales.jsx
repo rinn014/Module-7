@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../Module_8style/After_Sales.css";
+import "./Module_8style/After_Sales.css";
 function AfterSalesSupport() {
   const [cases, setCases] = useState([
     // Example dummy cases

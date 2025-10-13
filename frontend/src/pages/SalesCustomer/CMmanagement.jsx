@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../Module_8style/CM_management.css";
+import "./Module_8style/CM_management.css";
 
 function CRMManagement() {
   const [customers, setCustomers] = useState([
